@@ -23,7 +23,7 @@
 					<assembleDirectory>target</assembleDirectory>
 					<programs>
 						<program>
-							<mainClass>launch.Main</mainClass>
+							<mainClass>ch.ethz.inf.launch.Main</mainClass>
 							<name>webapp</name>
 						</program>
 					</programs>
