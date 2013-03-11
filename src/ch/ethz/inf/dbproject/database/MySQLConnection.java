@@ -26,8 +26,10 @@ public final class MySQLConnection {
 	private static MySQLConnection instance = null;
 
 	public static synchronized MySQLConnection getInstance() {
-		if (instance == null) {
-			instance = new MySQLConnection();
+		synchronized (MySQLConnection.class) {
+			if (instance == null) {
+				instance = new MySQLConnection();
+			}
 		}
 		return instance;
 	}
@@ -39,12 +41,24 @@ public final class MySQLConnection {
 			new Driver();
 
 			try {
+				/*
+				 * How to create the dev database:
+				 * 
+				 * > mysql -u root
+				 * 
+				 * > create user dmdb@localhost identified by '1234';
+				 * 
+				 * > create database dmdb2013;
+				 * 
+				 * > grant all on dmdb2013.* to dmdb@localhost;
+				 * 
+				 * > quit;
+				 */
+
 				String uri = System.getenv("DATABASE_URL");
 				if (uri == null || uri.equals("")) {
-					Logger.getLogger("global")
-							.log(Level.INFO,
-									"Using default database settings...");
 					uri = "mysql://dmdb:1234@localhost:3306/dmdb2013";
+					Logger.getLogger("global").log(Level.INFO, "Using default database settings: " + uri);
 				}
 
 				URI dbUri = new URI(uri);
