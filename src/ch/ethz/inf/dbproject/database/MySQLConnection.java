@@ -90,4 +90,8 @@ public final class MySQLConnection {
 	public final Connection getConnection() {
 		return this.connection;
 	}
+
+	public static Connection getCon() {
+		return getInstance().getConnection();
+	}
 }
