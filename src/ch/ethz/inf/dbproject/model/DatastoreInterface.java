@@ -31,8 +31,7 @@ public final class DatastoreInterface {
 	private Connection sqlConnection;
 
 	public DatastoreInterface() {
-		//TODO Uncomment the following line once MySQL is running
-		//this.sqlConnection = MySQLConnection.getInstance().getConnection();
+		this.sqlConnection = MySQLConnection.getInstance().getConnection();
 	}
 	
 	public final Project getProjectById(final int id) {

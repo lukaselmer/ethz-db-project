@@ -1,8 +1,12 @@
 package ch.ethz.inf.dbproject.database;
 
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.swing.JOptionPane;
 
@@ -13,16 +17,6 @@ import com.mysql.jdbc.Driver;
  */
 public final class MySQLConnection {
 
-	/*
-	 * The connection parameters. You should change these to point to your
-	 * installation specific values.
-	 */
-	public static final String USERNAME = "dmdb";
-	public static final String PASSWORD = "1234";
-	public static final String HOSTNAME = "localhost";
-	public static final int PORT = 3306;
-	public static final String DATABASE = "dmdb2013";
-
 	private final Connection connection;
 
 	/**
@@ -31,9 +25,9 @@ public final class MySQLConnection {
 	 */
 	private static MySQLConnection instance = null;
 
-	public static synchronized  MySQLConnection getInstance() {
-		if(instance == null) {
-			 instance = new MySQLConnection();
+	public static synchronized MySQLConnection getInstance() {
+		if (instance == null) {
+			instance = new MySQLConnection();
 		}
 		return instance;
 	}
@@ -43,15 +37,36 @@ public final class MySQLConnection {
 
 		try {
 			new Driver();
-			connection = DriverManager.getConnection("jdbc:mysql://" + HOSTNAME	+ ":" + PORT + "/" + DATABASE, USERNAME, PASSWORD);
+
+			try {
+				String uri = System.getenv("DATABASE_URL");
+				if (uri == null || uri.equals("")) {
+					Logger.getLogger("global")
+							.log(Level.INFO,
+									"Using default database settings...");
+					uri = "mysql://dmdb:1234@localhost:3306/dmdb2013";
+				}
+
+				URI dbUri = new URI(uri);
+
+				String username = dbUri.getUserInfo().split(":")[0];
+				String password = dbUri.getUserInfo().split(":")[1];
+				String dbUrl = "jdbc:mysql://" + dbUri.getHost() + dbUri.getPath();
+
+				connection = DriverManager.getConnection(dbUrl, username, password);
+			} catch (URISyntaxException e) {
+				e.printStackTrace();
+				Logger.getLogger("global").log(Level.SEVERE,
+						"Your DATABASE_URL env variable seems to be badly formatted: " + System.getenv("DATABASE_URL"));
+
+			}
 		} catch (final SQLException e) {
 			/**
 			 * Make sure that we really see this error.
 			 */
 			System.err.println("Could not connect to MYSQL. Is the server running?");
-			JOptionPane.showMessageDialog(null,	
-					"Could not connect to MYSQL. Is the server running?\n" + "Error in " + this.getClass().getName() + ".",
-					"Critical Error!", JOptionPane.ERROR_MESSAGE);
+			JOptionPane.showMessageDialog(null, "Could not connect to MYSQL. Is the server running?\n" + "Error in "
+					+ this.getClass().getName() + ".", "Critical Error!", JOptionPane.ERROR_MESSAGE);
 			e.printStackTrace();
 		}
 
