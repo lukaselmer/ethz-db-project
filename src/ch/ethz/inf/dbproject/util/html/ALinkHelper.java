@@ -15,6 +15,7 @@ public final class ALinkHelper extends HtmlHelperIface {
 
 	@Override
 	public final String generateHtmlCode() {
+		// possible vulnerability
 		return "<a href=\"" + this.url + "\">" + this.text + "</a>";
 	}
 	

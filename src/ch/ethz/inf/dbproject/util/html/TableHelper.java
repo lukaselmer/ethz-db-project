@@ -47,6 +47,7 @@ public final class TableHelper extends HtmlHelperIface {
 				sb.append("\t\t<th>&nbsp;</th>\n");
 			}
 			for (int c = 0; c < this.headersTopRow.length; ++c) {
+				// possible vulnerability
 				sb.append("\t\t<th>" + this.headersTopRow[c].toString() + "</th>\n");
 			}
 			sb.append("\t</tr>\n");
@@ -56,12 +57,14 @@ public final class TableHelper extends HtmlHelperIface {
 			sb.append("\t<tr>\n");
 			if (this.headersLeftRow != null) {
 				sb.append("\t\t<th>");
+				// possible vulnerability
 				sb.append(this.headersLeftRow[r].toString());
 				sb.append("</th>\n");
 			}
 			
 			for (int c = 0; c < this.contents[r].length; ++c) {
 				sb.append("\t\t<td>");
+				// possible vulnerability
 				sb.append(this.contents[r][c].toString());
 				sb.append("</td>\n");
 			}

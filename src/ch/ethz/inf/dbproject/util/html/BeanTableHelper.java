@@ -87,6 +87,7 @@ public final class BeanTableHelper<T> extends HtmlHelperIface {
 			final String urlParam = super.getString(t);
 			final String url = this.urlBase + urlParam;
 
+			// possible vulnerability
 			return "<a href=\"" + url + "\">" + this.text + "</a>";
 
 		}
@@ -148,6 +149,7 @@ public final class BeanTableHelper<T> extends HtmlHelperIface {
 		final StringBuilder sb = new StringBuilder();
 
 		sb.append("<!-- TableHelper Generated Code -->\n");
+		// possible vulnerability
 		sb.append("<table " + "cellpadding=\"0\" cellspacing=\"0\" " + "id=\""
 				+ this.tableHtmlId + "\" " + "class=\"" + this.tableHtmlClass
 				+ "\">\n");
@@ -159,12 +161,14 @@ public final class BeanTableHelper<T> extends HtmlHelperIface {
 				final Column c = it.next();
 				sb.append("\t<tr>\n");
 				// Header
+				// possible vulnerability
 				sb.append("\t\t<th>" + c.header + "</th>\n");
 
 				// Contents
 				for (final Iterator<T> cit = this.contents.iterator(); cit
 						.hasNext();) {
 					final T t = cit.next();
+					// possible vulnerability
 					sb.append("\t\t<td>" + c.getString(t) + "</td>\n");
 				}
 
@@ -178,6 +182,7 @@ public final class BeanTableHelper<T> extends HtmlHelperIface {
 			for (final Iterator<Column> it = this.columns.iterator(); it
 					.hasNext();) {
 				final Column c = it.next();
+				// possible vulnerability
 				sb.append("\t\t<th>" + c.header + "</th>\n");
 			}
 			sb.append("\t</tr>\n");
@@ -190,6 +195,7 @@ public final class BeanTableHelper<T> extends HtmlHelperIface {
 				for (final Iterator<Column> cit = this.columns.iterator(); cit
 						.hasNext();) {
 					final Column c = cit.next();
+					// possible vulnerability
 					sb.append("\t\t<td>" + c.getString(t) + "</td>\n");
 				}
 				sb.append("\t</tr>\n");
