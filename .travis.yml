@@ -1,1 +1,6 @@
 language: java
+jdk:
+  - openjdk6
+#  - openjdk7
+before_script:
+  - mysql -e "drop database if exists dmdb2013; create user dmdb@localhost identified by \'1234\'; create database dmdb2013; grant all on dmdb2013.* to dmdb@localhost;"
