@@ -21,6 +21,7 @@ public final class DatastoreInterface {
 
 	static {
 		try {
+			// TODO make this better?
 			if(DatabaseHelper.getTables().size() == 0 || DatabaseHelper.getCount("projects") == 0)
 			DatabaseSeeder.resetAndSeed();
 		} catch (SQLException e) {
@@ -56,30 +57,22 @@ public final class DatastoreInterface {
 	}
 	
 	public final List<Project> getAllProjects() {
-
-		/**
-		 * TODO this method should return all the projects in the database
-		 */
-		
+		final List<Project> projects = new ArrayList<Project>(); 
 		try {
-			
 			final Statement stmt = this.sqlConnection.createStatement();
 			final ResultSet rs = stmt.executeQuery("select * from projects");
 		
-			final List<Project> projects = new ArrayList<Project>(); 
 			while (rs.next()) {
 				projects.add(new Project(rs));
 			}
 			
 			rs.close();
 			stmt.close();
-
-			return projects;
-			
 		} catch (final SQLException ex) {			
-			ex.printStackTrace();
-			return null;			
+			ex.printStackTrace();		
 		}
+		
+		return projects;
 		
 		
 		
