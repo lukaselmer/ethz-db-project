@@ -21,7 +21,7 @@ public final class DatastoreInterface {
 
 	static {
 		try {
-			if(DatabaseHelper.getTables().size() == 0 && DatabaseHelper.getCount("projects") == 0)
+			if(DatabaseHelper.getTables().size() == 0 || DatabaseHelper.getCount("projects") == 0)
 			DatabaseSeeder.resetAndSeed();
 		} catch (SQLException e) {
 			e.printStackTrace();
