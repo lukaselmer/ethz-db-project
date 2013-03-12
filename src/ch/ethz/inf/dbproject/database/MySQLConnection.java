@@ -26,10 +26,8 @@ public final class MySQLConnection {
 	private static MySQLConnection instance = null;
 
 	public static synchronized MySQLConnection getInstance() {
-		synchronized (MySQLConnection.class) {
-			if (instance == null) {
-				instance = new MySQLConnection();
-			}
+		if (instance == null) {
+			instance = new MySQLConnection();
 		}
 		return instance;
 	}
