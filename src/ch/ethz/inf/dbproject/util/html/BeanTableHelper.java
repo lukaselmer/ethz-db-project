@@ -151,7 +151,7 @@ public final class BeanTableHelper<T> extends HtmlHelperIface {
 		sb.append("<!-- TableHelper Generated Code -->\n");
 		// possible vulnerability
 		sb.append("<table " + "cellpadding=\"0\" cellspacing=\"0\" " + "id=\""
-				+ this.tableHtmlId + "\" " + "class=\"" + this.tableHtmlClass
+				+ this.tableHtmlId + "\" " + "class=\"table " + this.tableHtmlClass
 				+ "\">\n");
 
 		if (this.vertical) {

@@ -1,45 +1,85 @@
-<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
-<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
-
+<!DOCTYPE html>
 <html>
 	
 	<head>
-	    <link href="style.css" rel="stylesheet" type="text/css">
-		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+	    <meta charset="utf-8"/>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+        
+		<meta http-equiv="Pragma" content="cache"/>
+		<meta name="robots" content="index, follow"/>
+		<meta http-equiv="Language" content="en"/>
+		<meta http-equiv="Content-Style-Type" content="text/css"/>
+  
+        <link href="//netdna.bootstrapcdn.com/twitter-bootstrap/2.3.1/css/bootstrap-combined.min.css" rel="stylesheet">
+        <!-- <link href="//netdna.bootstrapcdn.com/bootswatch/2.3.0/cerulean/bootstrap.min.css" rel="stylesheet"> -->
+	    <link href="style.css" rel="stylesheet">
+        
+        
+	    <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
+	    <!--[if lt IE 9]>
+	      <script src="../assets/js/html5shiv.js"></script>
+	    <![endif]-->
+        
 		<title>Online Crowd Funding</title>
+		
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	</head>
 
 	<body>
 
-		<!-- Header -->
-		
-		<table id="masterTable" cellpadding="0" cellspacing="0">
-			<tr>
-				<th id="masterHeader" colspan="2">
-					<h1>CrowdStarter</h1>
-					Project by &lt;Name Here&gt; 
-				</th>
-			</tr>
-			<tr id="masterContent">
-			
-				<td id="masterContentMenu">
-					
-					<div class="menuDiv1"></div>
-					<div class="menuDiv1"><a href="Home">Home</a></div>
-					<div class="menuDiv1"><a href="Projects">All projects</a></div>
-					<div class="menuDiv2"><a href="Projects?filter=popular">Most popular</a></div>
-					<div class="menuDiv2"><a href="Projects?filter=funded">Most funded</a></div>
-					<div class="menuDiv2"><a href="Projects?filter=ending">Ending soon</a></div>
-					<div class="menuDiv1">Categories</div>
-					<div class="menuDiv2"><a href="Projects?category=art">Art</a></div>
-					<div class="menuDiv2"><a href="Projects?category=comics">Comics</a></div>
-					<div class="menuDiv2"><a href="Projects?category=music">Music</a></div>
-					<div class="menuDiv2"><a href="Projects?category=other">...</a></div>
-					<div class="menuDiv1"><a href="Search">Search</a></div>
-					<div class="menuDiv1"><a href="User">User Profile</a></div>
-					
-				</td>
+
+	    <div class="navbar navbar-inverse navbar-fixed-top">
+	      <div class="navbar-inner">
+	        <div class="container">
+	          <button type="button" class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+	            <span class="icon-bar"></span>
+	            <span class="icon-bar"></span>
+	            <span class="icon-bar"></span>
+	          </button>
+	          <a class="brand" href="#">CrowdStarter</a>
+	          <div class="nav-collapse collapse">
+	            <ul class="nav">
+	              <li class="active"><a href="Home">Home</a></li>
+	              <li><a href="Projects">All Projects</a></li>
+	              
+	              <li class="dropdown">
+	                <a href="#" class="dropdown-toggle" data-toggle="dropdown">Filter <b class="caret"></b></a>
+	                <ul class="dropdown-menu">
+	              		<li><a href="Projects?filter=popular">Most popular</a></li>
+	              		<li><a href="Projects?filter=funded">Most funded</a></li>
+	             		<li><a href="Projects?filter=ending">Ending soon</a></li>
+	                </ul>
+	              </li>
+	              
+	              <li class="dropdown">
+	                <a href="#" class="dropdown-toggle" data-toggle="dropdown">Categories <b class="caret"></b></a>
+	                <ul class="dropdown-menu">
+					  <li><a href="Projects?category=art">Art</a></li>
+					  <li><a href="Projects?category=comics">Comics</a></li>
+					  <li><a href="Projects?category=music">Music</a></li>
+					  <li><a href="Projects?category=other">...</a></li>
+	                  <!-- <li class="divider"></li>
+	                  <li class="nav-header">Nav header</li>
+	                  <li><a href="#">Separated link</a></li>
+	                  <li><a href="#">One more separated link</a></li> -->
+	                </ul>
+	              </li>
+	              <li><a href="Search">Search</a></li>
+	              <li><a href="User">User Profile</a></li>
+	            </ul>
+	            <!-- <form class="navbar-form pull-right">
+	              <input class="span2" type="text" placeholder="Email">
+	              <input class="span2" type="password" placeholder="Password">
+	              <button type="submit" class="btn">Sign in</button>
+	            </form> -->
+	          </div>
+	        </div>
+	      </div>
+	    </div>
+
 				
-				<td id="masterContentPlaceholder">
-				
 		
+        <div class="container main-content">
+        	<div class="row">
+        	
+				

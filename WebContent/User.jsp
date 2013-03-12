@@ -23,22 +23,22 @@ if ((Boolean) session.getAttribute(UserServlet.SESSION_USER_LOGGED_IN)) {
 %>
 
 	<form action="User" method="get">
-	<input type="hidden" name="action" value="login" />
-	<table>
-		<tr>
-			<th>Username</th>
-			<td><input type="text" name="username" value="" /></td>
-		</tr>
-		<tr>
-			<th>Password</th>
-			<td><input type="password" name="password" value="" /></td>
-		</tr>
-		<tr>
-			<th colspan="2">
-				<input type="submit" value="Login" />
-			</th>
-		</tr>
-	</table>
+		<input type="hidden" name="action" value="login" />
+		<table>
+			<tr>
+				<th>Username</th>
+				<td><input type="text" name="username" value="" /></td>
+			</tr>
+			<tr>
+				<th>Password</th>
+				<td><input type="password" name="password" value="" /></td>
+			</tr>
+			<tr>
+				<th colspan="2">
+					<input type="submit" value="Login" />
+				</th>
+			</tr>
+		</table>
 	</form>
 
 <%

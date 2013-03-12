@@ -3,10 +3,6 @@
 
 <h1>Projects</h1>
 
-<hr/>
-
 <%= session.getAttribute("projects") %>
-
-<hr/>
 
 <%@ include file="Footer.jsp" %>

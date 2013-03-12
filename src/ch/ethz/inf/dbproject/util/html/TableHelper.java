@@ -39,7 +39,7 @@ public final class TableHelper extends HtmlHelperIface {
 		final StringBuilder sb = new StringBuilder();
 		
 		sb.append("<!-- TableHelper Generated Code -->\n");
-		sb.append("<table>\n");
+		sb.append("<table class=\"table\">\n");
 		
 		if (this.headersTopRow != null) {
 			sb.append("\t<tr>\n");
