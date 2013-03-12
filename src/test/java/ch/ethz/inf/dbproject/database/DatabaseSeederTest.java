@@ -15,21 +15,22 @@ import org.junit.Test;
 import ch.ethz.inf.dbproject.database.DatabaseHelper;
 import ch.ethz.inf.dbproject.database.DatabaseSeeder;
 import ch.ethz.inf.dbproject.database.MySQLConnection;
+import ch.ethz.inf.dbproject.exceptions.InvalidStateException;
 
 public class DatabaseSeederTest {
 
 	private static final List<String> EXPECTED_TABLES = Arrays.asList(new String[] { "users", "projects" });
 
 	@Before
-	public void reset() throws SQLException{
+	public void reset() throws SQLException {
 		DatabaseSeeder.resetAndSeed();
 	}
-	
+
 	@AfterClass
-	public static void resetAll() throws SQLException{
+	public static void resetAll() throws SQLException {
 		DatabaseSeeder.resetAndSeed();
 	}
-	
+
 	@Test
 	public void testReset() throws SQLException {
 		assertTrue("database not should be empty", DatabaseHelper.getTables().size() > 0);
@@ -55,6 +56,12 @@ public class DatabaseSeederTest {
 		for (String name : existingTables) {
 			assertTrue("table " + name + " should not exist", expectedTables.contains(name));
 		}
+	}
+
+	@Test
+	public void testInserts() throws SQLException, InvalidStateException {
+		assertEquals("users should be created", 3, DatabaseHelper.getCount("users"));
+		assertEquals("projects should be created", 4, DatabaseHelper.getCount("projects"));
 	}
 
 }
