@@ -8,6 +8,8 @@ import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.List;
 
+import org.junit.AfterClass;
+import org.junit.Before;
 import org.junit.Test;
 
 import ch.ethz.inf.dbproject.database.DatabaseHelper;
@@ -18,9 +20,18 @@ public class DatabaseSeederTest {
 
 	private static final List<String> EXPECTED_TABLES = Arrays.asList(new String[] { "users", "projects" });
 
+	@Before
+	public void reset() throws SQLException{
+		DatabaseSeeder.resetAndSeed();
+	}
+	
+	@AfterClass
+	public static void resetAll() throws SQLException{
+		DatabaseSeeder.resetAndSeed();
+	}
+	
 	@Test
 	public void testReset() throws SQLException {
-		DatabaseSeeder.resetAndSeed();
 		assertTrue("database not should be empty", DatabaseHelper.getTables().size() > 0);
 		DatabaseSeeder.reset();
 		assertTrue("database should be empty", DatabaseHelper.getTables().size() == 0);
@@ -36,7 +47,6 @@ public class DatabaseSeederTest {
 
 	@Test
 	public void testResetAndSeed() throws SQLException {
-		DatabaseSeeder.resetAndSeed();
 		List<String> expectedTables = EXPECTED_TABLES;
 		List<String> existingTables = DatabaseHelper.getTables();
 		for (String name : expectedTables) {
