@@ -53,6 +53,7 @@ public final class MySQLConnection {
 				 * > quit;
 				 */
 
+
 				String uri = System.getenv("DATABASE_URL");
 				if (uri == null || uri.equals("")) {
 					uri = "mysql://dmdb:1234@localhost:3306/dmdb2013";
