@@ -2,6 +2,7 @@ package ch.ethz.inf.dbproject.model;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.Random;
 
 public final class Project {
 	
@@ -30,8 +31,8 @@ public final class Project {
 		// TODO Extra properties need to be added
 		this.id = rs.getInt("id");
 		this.name = rs.getString("name");
-		this.field2 = rs.getString("field2");
-		this.field3  = rs.getInt("field3");
+		this.field2 = new Random().nextInt(100) + "%"; //= rs.getString("field2");
+		this.field3 = new Random().nextInt(10000); //= rs.getInt("field3");
 	}
 
 	/**

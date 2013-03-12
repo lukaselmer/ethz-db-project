@@ -1,10 +1,16 @@
 package ch.ethz.inf.dbproject.model;
 
 import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 
+import ch.ethz.inf.dbproject.database.DatabaseHelper;
+import ch.ethz.inf.dbproject.database.DatabaseSeeder;
 import ch.ethz.inf.dbproject.database.MySQLConnection;
+import ch.ethz.inf.dbproject.exceptions.InvalidStateException;
 
 /**
  * This class should be the interface between the web application
@@ -13,21 +19,17 @@ import ch.ethz.inf.dbproject.database.MySQLConnection;
  */
 public final class DatastoreInterface {
 
-	//FIXME This is a temporary list of projects that will be displayed until all the methods have been properly implemented
-	private final static Project[] staticProjects = new Project[] { 
-			new Project(0, "High-End Server", "1287.9%", 10000), 
-			new Project(1, "The Next MacBook Air", "54.7%", 250000),
-			new Project(2, "New Research Lab", "1.2%", 1000000),
-			new Project(3, "Death Star", "0.0%", 1000000000),
-		};
-	private final static List<Project> staticProjectList = new ArrayList<Project>();
 	static {
-		for (int i = 0; i < staticProjects.length; i++) {
-			staticProjectList.add(staticProjects[i]);
+		try {
+			if(DatabaseHelper.getTables().size() == 0 && DatabaseHelper.getCount("projects") == 0)
+			DatabaseSeeder.resetAndSeed();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} catch (InvalidStateException e) {
+			e.printStackTrace();
 		}
 	}
 	
-	@SuppressWarnings("unused")
 	private Connection sqlConnection;
 
 	public DatastoreInterface() {
@@ -35,17 +37,22 @@ public final class DatastoreInterface {
 	}
 	
 	public final Project getProjectById(final int id) {
-	
-		/**
-		 * TODO this method should return the project with the given id
-		 */
+		Project p = null;
 		
-		if (id < staticProjects.length) {
-			return staticProjects[id];
-		} else {
-			return null;
+		try {
+			final Statement stmt = this.sqlConnection.createStatement();
+			final ResultSet rs = stmt.executeQuery("select * from projects where id = " + id);
+
+			if (rs.next())
+				p = new Project(rs);
+
+			rs.close();
+			stmt.close();
+
+		} catch (final SQLException ex) {
+			ex.printStackTrace();
 		}
-		
+		return p;
 	}
 	
 	public final List<Project> getAllProjects() {
@@ -53,13 +60,11 @@ public final class DatastoreInterface {
 		/**
 		 * TODO this method should return all the projects in the database
 		 */
-			
-		/*
-		//Code example for DB access
+		
 		try {
 			
 			final Statement stmt = this.sqlConnection.createStatement();
-			final ResultSet rs = stmt.executeQuery("Select ...");
+			final ResultSet rs = stmt.executeQuery("select * from projects");
 		
 			final List<Project> projects = new ArrayList<Project>(); 
 			while (rs.next()) {
@@ -76,15 +81,12 @@ public final class DatastoreInterface {
 			return null;			
 		}
 		
-		*/
+		
 		
 		// If you chose to use PreparedStatements instead of statements, you should prepare them in the constructor of DatastoreInterface.
 		
-		// For the time being, we return some bogus projects
-		return staticProjectList;
 	}
 	
 	//TODO Implement all missing data access methods
-
 
 }
