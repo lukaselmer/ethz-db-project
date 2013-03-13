@@ -1,6 +1,5 @@
 package ch.ethz.inf.dbproject.model;
 
-import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -31,17 +30,17 @@ public final class DatastoreInterface {
 		}
 	}
 	
-	private Connection sqlConnection;
+	private MySQLConnection sqlConnection;
 
 	public DatastoreInterface() {
-		this.sqlConnection = MySQLConnection.getInstance().getConnection();
+		this.sqlConnection = MySQLConnection.getInstance();
 	}
 	
 	public final Project getProjectById(final int id) {
 		Project p = null;
 		
 		try {
-			final Statement stmt = this.sqlConnection.createStatement();
+			final Statement stmt = this.sqlConnection.getConnection().createStatement();
 			final ResultSet rs = stmt.executeQuery("select * from projects where id = " + id);
 
 			if (rs.next())
@@ -59,7 +58,7 @@ public final class DatastoreInterface {
 	public final List<Project> getAllProjects() {
 		final List<Project> projects = new ArrayList<Project>(); 
 		try {
-			final Statement stmt = this.sqlConnection.createStatement();
+			final Statement stmt = this.sqlConnection.getConnection().createStatement();
 			final ResultSet rs = stmt.executeQuery("select * from projects");
 		
 			while (rs.next()) {

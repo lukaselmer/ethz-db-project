@@ -1,6 +1,5 @@
 package ch.ethz.inf.dbproject.database;
 
-import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -12,7 +11,7 @@ public class DatabaseHelper {
 
 	public static List<String> getTables() throws SQLException {
 		List<String> tables = new ArrayList<String>();
-		ResultSet rs = MySQLConnection.getCon().getMetaData().getTables(null, null, "%", null);
+		ResultSet rs = MySQLConnection.getInstance().getConnection().getMetaData().getTables(null, null, "%", null);
 		while (rs.next()) {
 			tables.add(rs.getString(3));
 		}
@@ -21,7 +20,7 @@ public class DatabaseHelper {
 
 	public static int getCount(String table) throws SQLException, InvalidStateException {
 		// Possible SQL injection voulnerability => should escape table name
-		ResultSet rs = MySQLConnection.getCon().createStatement().executeQuery("select count(*) from " + table);
+		ResultSet rs = MySQLConnection.getInstance().getConnection().createStatement().executeQuery("select count(*) from " + table);
 
 		if (!rs.next())
 			throw new InvalidStateException("Query unsuccessful. Does the table " + table + " exist?");

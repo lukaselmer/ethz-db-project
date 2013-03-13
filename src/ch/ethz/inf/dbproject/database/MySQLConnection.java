@@ -17,7 +17,7 @@ import com.mysql.jdbc.Driver;
  */
 public final class MySQLConnection {
 
-	private final Connection connection;
+	private Connection connection;
 
 	/**
 	 * Singleton instance: We want to avoid re-establishing connections across
@@ -33,6 +33,10 @@ public final class MySQLConnection {
 	}
 
 	private MySQLConnection() {
+		this.connection = connectToDatabase();
+	}
+
+	private Connection connectToDatabase() {
 		Connection connection = null;
 
 		try {
@@ -81,15 +85,21 @@ public final class MySQLConnection {
 					+ this.getClass().getName() + ".", "Critical Error!", JOptionPane.ERROR_MESSAGE);
 			e.printStackTrace();
 		}
-
-		this.connection = connection;
+		return connection;
 	}
 
 	public final Connection getConnection() {
+		ensureConnected();
 		return this.connection;
 	}
 
-	public static Connection getCon() {
-		return getInstance().getConnection();
+	public void ensureConnected() {
+		try {
+			if (!connection.isValid(1000)) {
+				connection = connectToDatabase();
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
 	}
 }

@@ -1,9 +1,8 @@
 package test.java.ch.ethz.inf.dbproject.database;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
-import java.sql.Connection;
-import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.List;
@@ -14,7 +13,6 @@ import org.junit.Test;
 
 import ch.ethz.inf.dbproject.database.DatabaseHelper;
 import ch.ethz.inf.dbproject.database.DatabaseSeeder;
-import ch.ethz.inf.dbproject.database.MySQLConnection;
 import ch.ethz.inf.dbproject.exceptions.InvalidStateException;
 
 public class DatabaseSeederTest {
