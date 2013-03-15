@@ -17,7 +17,7 @@ import ch.ethz.inf.dbproject.exceptions.InvalidStateException;
 
 public class DatabaseSeederTest {
 
-	private static final List<String> EXPECTED_TABLES = Arrays.asList(new String[] { "users", "projects" });
+	private static final List<String> EXPECTED_TABLES = Arrays.asList(new String[] { "users", "projects", "cities" });
 
 	@Before
 	public void reset() throws SQLException {
