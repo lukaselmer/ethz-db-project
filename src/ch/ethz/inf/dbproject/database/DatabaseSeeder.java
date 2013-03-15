@@ -24,9 +24,17 @@ public class DatabaseSeeder {
 	}
 
 	private static void createTables(Statement s) throws SQLException {
-		s.execute("create table users (id int not null, name varchar(255), primary key ( id ))");
-		s.execute("create table projects (id int not null, user_id int not null, name varchar(255), "
-				+ "primary key ( id ), key index_projects_on_user_id (user_id))");
+		createTable(s, "users", "name varchar(255)");
+		createTable(s, "projects", "user_id int not null, name varchar(255)", "key index_projects_on_user_id (user_id)");
+	}
+
+	private static void createTable(Statement s, String table, String vars, String additions) throws SQLException {
+		additions = additions == null ? "" : ", " + additions;
+		s.execute("create table " + table + " (id int not null, " + vars + ", primary key ( id )" + additions + ")");
+	}
+
+	private static void createTable(Statement s, String table, String vars) throws SQLException {
+		createTable(s, table, vars, null);
 	}
 
 	private static void seedData(Statement s) throws SQLException {
