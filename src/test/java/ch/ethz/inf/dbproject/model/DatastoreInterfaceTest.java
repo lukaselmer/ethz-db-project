@@ -1,4 +1,4 @@
-package test.java.ch.ethz.inf.dbproject.model;
+package ch.ethz.inf.dbproject.model;
 
 import static org.junit.Assert.*;
 

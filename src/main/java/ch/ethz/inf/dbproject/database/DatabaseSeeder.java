@@ -15,8 +15,7 @@ public class DatabaseSeeder {
 		seed();
 	}
 
-	// TODO: this method is public because of the test. Fix it somehow?
-	public static void seed() throws SQLException {
+	protected static void seed() throws SQLException {
 		Statement s = con.createStatement();
 		createTables(s);
 		seedData(s);
@@ -42,8 +41,7 @@ public class DatabaseSeeder {
 		s.execute("insert into projects values (1, 3, 'HSR'), (2, 2, 'ETH'), (3, 1, 'World domination'), (4, 1, 'Foo')");
 	}
 
-	// TODO: this method is public because of the test. Fix it somehow?
-	public static void reset() throws SQLException {
+	protected static void reset() throws SQLException {
 		Statement s = con.createStatement();
 		for (String tableName : DatabaseHelper.getTables()) {
 			s.execute("drop table " + tableName);
