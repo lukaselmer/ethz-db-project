@@ -51,13 +51,13 @@ public final class ProjectsServlet extends HttpServlet {
 		/*
 		 * Column 1: The name of the item (This will probably have to be changed)
 		 */
-		table.addBeanColumn("Project Name", "name");
+		table.addBeanColumn("Project Title", "title");
 
 		/*
 		 * Columns 2 & 3: Some random fields. These should be replaced by i.e. funding progress, or time remaining
 		 */
-		table.addBeanColumn("Test Field2", "field2");
-		table.addBeanColumn("Test Integer Field 3", "field3");
+		table.addBeanColumn("Start", "start");
+		table.addBeanColumn("End", "end");
 
 		/*
 		 * Column 4: This is a special column. It adds a link to view the

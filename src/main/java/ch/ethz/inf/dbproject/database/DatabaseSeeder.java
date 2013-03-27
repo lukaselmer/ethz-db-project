@@ -26,8 +26,6 @@ public class DatabaseSeeder {
 		
 		// TODO: Load insertData sql script
 		
-		
-		
 	}
 
 //	private static void createTables(Statement s) throws SQLException {
