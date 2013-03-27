@@ -5,30 +5,28 @@ import java.sql.SQLException;
 import java.util.Date;
 
 public final class Project {
-	
-	/**
-	 * TODO The properties of the project should be added here
-	 */
+
 	private final int id;
 	private final String title;
 	private final String description;
 	private final Date start;
 	private final Date end;
-	
+
 	/**
 	 * Construct a new project.
 	 * 
-	 * @param name		The name of the project
+	 * @param name
+	 *            The name of the project
 	 */
-	public Project (final int id, final String title, final String description, final Date start, final Date end) {
+	public Project(final int id, final String title, final String description, final Date start, final Date end) {
 		this.id = id;
 		this.title = title;
 		this.description = description;
 		this.start = start;
 		this.end = end;
 	}
-	
-	public Project(	final ResultSet rs) throws SQLException {
+
+	public Project(final ResultSet rs) throws SQLException {
 		this.id = rs.getInt("id");
 		this.title = rs.getString("title");
 		this.description = rs.getString("description");
@@ -55,5 +53,5 @@ public final class Project {
 	public Date getEnd() {
 		return end;
 	}
-	
+
 }

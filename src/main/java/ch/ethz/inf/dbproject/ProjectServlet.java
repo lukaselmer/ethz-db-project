@@ -93,7 +93,7 @@ public final class ProjectServlet extends HttpServlet {
 			 */
 			final String action = request.getParameter("action");
 			if (action != null && action.trim().equals("add_comment")) {
-				String username = UserManagement.getCurrentlyLoggedInUser(session).getUsername();
+				String username = UserManagement.getCurrentlyLoggedInUser(session).getName();
 				String comment = request.getParameter("comment");
 				Comment commentObj = new Comment(username, comment);
 				
