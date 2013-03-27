@@ -70,6 +70,7 @@ public final class ProjectServlet extends HttpServlet {
 			/*
 			 * Columns 2 & 3: Some random fields. These should be replaced by i.e. funding progress, or time remaining
 			 */
+			table.addBeanColumn("Description", "description");
 			table.addBeanColumn("Start", "start");
 			table.addBeanColumn("End", "end");
 
