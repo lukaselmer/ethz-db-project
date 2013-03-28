@@ -17,7 +17,8 @@ import ch.ethz.inf.dbproject.exceptions.InvalidStateException;
 
 public class DatabaseSeederTest {
 
-	private static final List<String> EXPECTED_TABLES = Arrays.asList(new String[] { "users", "projects", "cities" });
+	private static final List<String> EXPECTED_TABLES = Arrays.asList(new String[] { "city", "category", "user", "project", "stretch_goal",
+			"funding_amount", "fund", "comment" });
 
 	@Before
 	public void reset() throws SQLException {
@@ -58,8 +59,8 @@ public class DatabaseSeederTest {
 
 	@Test
 	public void testInserts() throws SQLException, InvalidStateException {
-		assertEquals("users should be created", 3, DatabaseHelper.getCount("users"));
-		assertEquals("projects should be created", 4, DatabaseHelper.getCount("projects"));
+		assertEquals("users should be created", 3, DatabaseHelper.getCount("user"));
+		assertEquals("funding amounts should be created", 8, DatabaseHelper.getCount("funding_amount"));
 	}
 
 }

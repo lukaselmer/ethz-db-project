@@ -10,7 +10,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
-import ch.ethz.inf.dbproject.model.Amount;
+import ch.ethz.inf.dbproject.model.FundingAmount;
 import ch.ethz.inf.dbproject.model.Comment;
 import ch.ethz.inf.dbproject.model.DatastoreInterface;
 import ch.ethz.inf.dbproject.model.Project;
@@ -65,13 +65,14 @@ public final class ProjectServlet extends HttpServlet {
 			/*
 			 * Column 1: The name of the item (This will probably have to be changed)
 			 */
-			table.addBeanColumn("Project Name", "name");
+			table.addBeanColumn("Project Title", "title");
 
 			/*
 			 * Columns 2 & 3: Some random fields. These should be replaced by i.e. funding progress, or time remaining
 			 */
-			table.addBeanColumn("Test Field2", "field2");
-			table.addBeanColumn("Test Integer Field 3", "field3");
+			table.addBeanColumn("Description", "description");
+			table.addBeanColumn("Start", "start");
+			table.addBeanColumn("End", "end");
 
 			table.addObject(project);
 			table.setVertical(true);			
@@ -93,7 +94,7 @@ public final class ProjectServlet extends HttpServlet {
 			 */
 			final String action = request.getParameter("action");
 			if (action != null && action.trim().equals("add_comment")) {
-				String username = UserManagement.getCurrentlyLoggedInUser(session).getUsername();
+				String username = UserManagement.getCurrentlyLoggedInUser(session).getName();
 				String comment = request.getParameter("comment");
 				Comment commentObj = new Comment(username, comment);
 				

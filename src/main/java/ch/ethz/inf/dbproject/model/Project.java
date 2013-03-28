@@ -2,57 +2,56 @@ package ch.ethz.inf.dbproject.model;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.Random;
+import java.util.Date;
 
 public final class Project {
-	
-	/**
-	 * TODO The properties of the project should be added here
-	 */
+
 	private final int id;
-	private final String name;
-	private final String field2;
-	private final int field3;
-	
+	private final String title;
+	private final String description;
+	private final Date start;
+	private final Date end;
+
 	/**
 	 * Construct a new project.
 	 * 
-	 * @param name		The name of the project
+	 * @param name
+	 *            The name of the project
 	 */
-	public Project(	final int id, final String name, final String field2, final int field3) {
+	public Project(final int id, final String title, final String description, final Date start, final Date end) {
 		this.id = id;
-		this.name = name;
-		this.field2 = field2;
-		this.field3 = field3;
-	}
-	
-	public Project(	final ResultSet rs) throws SQLException {
-		// TODO These need to be adapted to your schema
-		// TODO Extra properties need to be added
-		this.id = rs.getInt("id");
-		this.name = rs.getString("name");
-		this.field2 = new Random().nextInt(100) + "%"; //= rs.getString("field2");
-		this.field3 = new Random().nextInt(10000); //= rs.getInt("field3");
+		this.title = title;
+		this.description = description;
+		this.start = start;
+		this.end = end;
 	}
 
-	/**
-	 * HINT: In eclipse, use Alt + Shirt + S menu and choose:
-	 * "Generate Getters and Setters to auto-magically generate
-	 * the getters. 
-	 */
-	public String getName() {
-		return name;
+	public Project(final ResultSet rs) throws SQLException {
+		this.id = rs.getInt("id");
+		this.title = rs.getString("title");
+		this.description = rs.getString("description");
+		this.start = rs.getDate("start");
+		this.end = rs.getDate("end");
 	}
 
 	public int getId() {
 		return id;
 	}
 
-	public String getField2() {
-		return field2;
+	public String getTitle() {
+		return title;
 	}
 
-	public int getField3() {
-		return field3;
-	}	
+	public String getDescription() {
+		return description;
+	}
+
+	public Date getStart() {
+		return start;
+	}
+
+	public Date getEnd() {
+		return end;
+	}
+
 }

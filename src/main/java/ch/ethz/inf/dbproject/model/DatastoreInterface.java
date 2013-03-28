@@ -21,8 +21,8 @@ public final class DatastoreInterface {
 	static {
 		try {
 			// TODO make this better?
-			if(DatabaseHelper.getTables().size() == 0 || DatabaseHelper.getCount("projects") == 0)
-			DatabaseSeeder.resetAndSeed();
+			if(DatabaseHelper.getTables().size() == 0 || DatabaseHelper.getCount("project") == 0)
+				DatabaseSeeder.resetAndSeed();
 		} catch (SQLException e) {
 			e.printStackTrace();
 		} catch (InvalidStateException e) {
@@ -41,7 +41,7 @@ public final class DatastoreInterface {
 		
 		try {
 			final Statement stmt = this.sqlConnection.getConnection().createStatement();
-			final ResultSet rs = stmt.executeQuery("select * from projects where id = " + id);
+			final ResultSet rs = stmt.executeQuery("select * from project where id = " + id);
 
 			if (rs.next())
 				p = new Project(rs);
@@ -59,7 +59,7 @@ public final class DatastoreInterface {
 		final List<Project> projects = new ArrayList<Project>(); 
 		try {
 			final Statement stmt = this.sqlConnection.getConnection().createStatement();
-			final ResultSet rs = stmt.executeQuery("select * from projects");
+			final ResultSet rs = stmt.executeQuery("select * from project");
 		
 			while (rs.next()) {
 				projects.add(new Project(rs));

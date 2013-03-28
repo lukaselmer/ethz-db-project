@@ -1,8 +1,18 @@
 package ch.ethz.inf.dbproject.database;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.UnsupportedEncodingException;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
+import ch.ethz.inf.launch.Main;
 
 /**
  * Resets and seeds the database with some test data
@@ -17,37 +27,47 @@ public class DatabaseSeeder {
 
 	protected static void seed() throws SQLException {
 		Statement s = con.createStatement();
-		createTables(s);
-		seedData(s);
+
+		executeSqlFile(s, "schema.sql");
+		executeSqlFile(s, "data.sql");
+
 		s.close();
 	}
 
-	private static void createTables(Statement s) throws SQLException {
-		createTable(s, "users", "name varchar(255) not null");
-		createTable(s, "projects", "user_id int not null, name varchar(255) not null", "key index_projects_on_user_id (user_id), unique (name)");
-		createTable(s, "cities", "name varchar(255) not null", "unique (name)");
+	private static void executeSqlFile(Statement s, String filename) throws SQLException {
+		String[] statements = readFile(filename);
+		for (String statement : statements) {
+			if (statement.trim().length() > 0)
+				s.execute(statement);
+		}
 	}
 
-	private static void createTable(Statement s, String table, String vars, String additions) throws SQLException {
-		additions = additions == null ? "" : ", " + additions;
-		s.execute("create table " + table + " (id int not null, " + vars + ", primary key ( id )" + additions + ")");
-	}
-
-	private static void createTable(Statement s, String table, String vars) throws SQLException {
-		createTable(s, table, vars, null);
-	}
-
-	private static void seedData(Statement s) throws SQLException {
-		s.execute("insert into users values (1, 'Fred'), (2, 'Ivo'), (3, 'Luke')");
-		s.execute("insert into cities values (1, 'Zurich'), (2, 'Bern'), (3, 'Geneva')");
-		s.execute("insert into projects values (1, 3, 'HSR'), (2, 2, 'ETH'), (3, 1, 'World domination'), (4, 1, 'Foo')");
+	private static String[] readFile(String file) {
+		String sql = "";
+		try {
+			StringBuilder b = new StringBuilder();
+			InputStream is = DatabaseSeeder.class.getResourceAsStream(file);
+			BufferedReader br = new BufferedReader(new InputStreamReader(is, "UTF-8"));
+			String line = br.readLine();
+			while (line != null) {
+				b.append(line);
+				b.append('\n');
+				line = br.readLine();
+			}
+			sql = b.toString();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		return sql.split(";");
 	}
 
 	protected static void reset() throws SQLException {
 		Statement s = con.createStatement();
+		s.execute("SET foreign_key_checks = 0");
 		for (String tableName : DatabaseHelper.getTables()) {
 			s.execute("drop table " + tableName);
 		}
+		s.execute("SET foreign_key_checks = 1");
 		s.close();
 	}
 
