@@ -10,5 +10,6 @@ Deployed to http://ethz-db.herokuapp.com/
 Deployment:
 
 ```sh
+heroku git:remote -a ethz-db
 git push heroku master
 ```
