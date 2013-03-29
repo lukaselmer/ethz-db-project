@@ -20,12 +20,18 @@ public final class DatastoreInterface {
 
 	static {
 		try {
-			// TODO make this better?
-			if(DatabaseHelper.getTables().size() == 0 || DatabaseHelper.getCount("project") == 0)
+			try {
+				// TODO make this better?
+				if (DatabaseHelper.getTables().size() == 0 || DatabaseHelper.getCount("project") == 0)
+					DatabaseSeeder.resetAndSeed();
+			} catch (SQLException e) {
+				e.printStackTrace();
 				DatabaseSeeder.resetAndSeed();
+			} catch (InvalidStateException e) {
+				e.printStackTrace();
+				DatabaseSeeder.resetAndSeed();
+			}
 		} catch (SQLException e) {
-			e.printStackTrace();
-		} catch (InvalidStateException e) {
 			e.printStackTrace();
 		}
 	}
