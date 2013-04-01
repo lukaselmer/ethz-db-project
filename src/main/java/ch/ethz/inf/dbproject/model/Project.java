@@ -6,9 +6,11 @@ import java.util.Date;
 
 public final class Project {
 
+	//TODO memeber for foreignkeys (category, city, user)
 	private final int id;
 	private final String title;
 	private final String description;
+	private final double goal;
 	private final Date start;
 	private final Date end;
 
@@ -18,10 +20,11 @@ public final class Project {
 	 * @param name
 	 *            The name of the project
 	 */
-	public Project(final int id, final String title, final String description, final Date start, final Date end) {
+	public Project(final int id, final String title, final String description, final double goal, final Date start, final Date end) {
 		this.id = id;
 		this.title = title;
 		this.description = description;
+		this.goal = goal;
 		this.start = start;
 		this.end = end;
 	}
@@ -30,6 +33,7 @@ public final class Project {
 		this.id = rs.getInt("id");
 		this.title = rs.getString("title");
 		this.description = rs.getString("description");
+		this.goal = rs.getDouble("goal");
 		this.start = rs.getDate("start");
 		this.end = rs.getDate("end");
 	}
@@ -52,6 +56,10 @@ public final class Project {
 
 	public Date getEnd() {
 		return end;
+	}
+
+	public double getGoal() {
+		return goal;
 	}
 
 }

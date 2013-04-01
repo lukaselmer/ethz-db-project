@@ -62,15 +62,9 @@ public final class ProjectServlet extends HttpServlet {
 
 			// Add columns to the new table
 
-			/*
-			 * Column 1: The name of the item (This will probably have to be changed)
-			 */
 			table.addBeanColumn("Project Title", "title");
-
-			/*
-			 * Columns 2 & 3: Some random fields. These should be replaced by i.e. funding progress, or time remaining
-			 */
 			table.addBeanColumn("Description", "description");
+			table.addBeanColumn("Goal", "goal");
 			table.addBeanColumn("Start", "start");
 			table.addBeanColumn("End", "end");
 
