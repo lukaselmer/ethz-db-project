@@ -90,7 +90,7 @@ public final class ProjectServlet extends HttpServlet {
 			if (action != null && action.trim().equals("add_comment")) {
 				String username = UserManagement.getCurrentlyLoggedInUser(session).getName();
 				String comment = request.getParameter("comment");
-				Comment commentObj = new Comment(username, comment);
+				//Comment commentObj = new Comment(username, comment);
 				
 				//TODO implement this
 				//this.dbInterface.addCommentForProject(id, commentObj);
@@ -99,10 +99,17 @@ public final class ProjectServlet extends HttpServlet {
 			/*******************************************************
 			 * Construct a table to present all comments
 			 *******************************************************/
-			//TODO implement this
-			//List<Comment> comments = this.dbInterface.getCommentsOfProject(id);
-			//Create a table to display the comments the same way as above	
-			//session.setAttribute("commentTable", table);
+			final List<Comment> comments = this.dbInterface.getCommentsOfProject(id);
+			final BeanTableHelper<Comment> commentTable = new BeanTableHelper<Comment>(
+					"comment" 		/* The table html id property */,
+					"commentTable" /* The table html class property */,
+					Comment.class 	/* The class of the objects (rows) that will bedisplayed */
+			);
+			commentTable.addBeanColumn("User", "user_id");
+			commentTable.addBeanColumn("Comment", "text");
+			commentTable.addBeanColumn("Created", "date");
+			session.setAttribute("commentTable", commentTable);
+			commentTable.addObjects(comments);
 			
 		} catch (final Exception ex) {
 			ex.printStackTrace();
