@@ -64,6 +64,7 @@ public final class ProjectServlet extends HttpServlet {
 
 			table.addBeanColumn("Project Title", "title");
 			table.addBeanColumn("Description", "description");
+			table.addBeanColumn("Owner", "owner");
 			table.addBeanColumn("Goal", "goal");
 			table.addBeanColumn("Start", "start");
 			table.addBeanColumn("End", "end");
@@ -99,13 +100,13 @@ public final class ProjectServlet extends HttpServlet {
 			/*******************************************************
 			 * Construct a table to present all comments
 			 *******************************************************/
-			final List<Comment> comments = this.dbInterface.getCommentByProjectId(id);
+			final List<Comment> comments = this.dbInterface.getCommentsByProjectId(id);
 			final BeanTableHelper<Comment> commentTable = new BeanTableHelper<Comment>(
 					"comment" 		/* The table html id property */,
 					"commentTable" /* The table html class property */,
 					Comment.class 	/* The class of the objects (rows) that will bedisplayed */
 			);
-			commentTable.addBeanColumn("User", "user_id");
+			commentTable.addBeanColumn("User", "name");
 			commentTable.addBeanColumn("Comment", "text");
 			commentTable.addBeanColumn("Created", "date");
 			session.setAttribute("commentTable", commentTable);

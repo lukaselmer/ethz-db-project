@@ -40,12 +40,14 @@ public final class DatastoreInterface {
 	private MySQLConnection sqlConnection;
 	private PreparedStatement pstmt_getCommentsOfProject;
 	private PreparedStatement pstmt_getProjectById;
+	private PreparedStatement pstmt_getUserById;
 
 	public DatastoreInterface() {
 		this.sqlConnection = MySQLConnection.getInstance();
 		try {
 			pstmt_getProjectById = this.sqlConnection.getConnection().prepareStatement("select * from project where id = ?");
 			pstmt_getCommentsOfProject = this.sqlConnection.getConnection().prepareStatement("select * from comment where project_id = ?");
+			pstmt_getUserById = this.sqlConnection.getConnection().prepareStatement("select * from user where id = ?");
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
@@ -64,6 +66,22 @@ public final class DatastoreInterface {
 			ex.printStackTrace();
 		}
 		return p;
+	}
+
+	public final User getUserById(final int id) {
+		User u = null;
+
+		try {
+			pstmt_getUserById.setInt(1, id);
+			ResultSet rs = pstmt_getUserById.executeQuery();
+			System.out.println(pstmt_getUserById.toString());
+			if (rs.next())
+				u = new User(rs);
+			rs.close();
+		} catch (final SQLException ex) {
+			ex.printStackTrace();
+		}
+		return u;
 	}
 
 	public final List<Project> getAllProjects() {
@@ -86,7 +104,7 @@ public final class DatastoreInterface {
 
 	}
 
-	public final List<Comment> getCommentByProjectId(final int id) {
+	public final List<Comment> getCommentsByProjectId(final int id) {
 		final List<Comment> comments = new ArrayList<Comment>();
 
 		try {
@@ -102,7 +120,6 @@ public final class DatastoreInterface {
 			ex.printStackTrace();
 		}
 		return comments;
-
 	}
 
 }

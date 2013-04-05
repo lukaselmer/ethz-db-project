@@ -6,13 +6,17 @@ import java.util.Date;
 
 public final class Project {
 
-	//TODO memeber for foreignkeys (category, city, user)
+	// TODO memeber for foreignkeys (category, city, user)
 	private final int id;
+	private final int user_id;
 	private final String title;
 	private final String description;
 	private final double goal;
 	private final Date start;
 	private final Date end;
+
+	// foreign key Objects
+	private final User user;
 
 	/**
 	 * Construct a new project.
@@ -20,22 +24,29 @@ public final class Project {
 	 * @param name
 	 *            The name of the project
 	 */
-	public Project(final int id, final String title, final String description, final double goal, final Date start, final Date end) {
+	public Project(final int id, final int user_id, final String title, final String description, final double goal, final Date start,
+			final Date end) {
 		this.id = id;
+		this.user_id = user_id;
 		this.title = title;
 		this.description = description;
 		this.goal = goal;
 		this.start = start;
 		this.end = end;
+		
+		this.user = new DatastoreInterface().getUserById(user_id);
 	}
 
 	public Project(final ResultSet rs) throws SQLException {
 		this.id = rs.getInt("id");
+		this.user_id = rs.getInt("user_id");
 		this.title = rs.getString("title");
 		this.description = rs.getString("description");
 		this.goal = rs.getDouble("goal");
 		this.start = rs.getDate("start");
 		this.end = rs.getDate("end");
+		
+		this.user = new DatastoreInterface().getUserById(user_id);
 	}
 
 	public int getId() {
@@ -60,6 +71,14 @@ public final class Project {
 
 	public double getGoal() {
 		return goal;
+	}
+
+	public int getUser_id() {
+		return user_id;
+	}
+	
+	public String getOwner(){
+		return user.getName();
 	}
 
 }
