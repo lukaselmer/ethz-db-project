@@ -42,6 +42,8 @@ public final class DatastoreInterface {
 	private PreparedStatement pstmt_getProjectById;
 	private PreparedStatement pstmt_getUserById;
 
+	
+	//dont get it why all prepared statements should be in the cTor.. but was a hint in this file..
 	public DatastoreInterface() {
 		this.sqlConnection = MySQLConnection.getInstance();
 		try {
@@ -74,7 +76,6 @@ public final class DatastoreInterface {
 		try {
 			pstmt_getUserById.setInt(1, id);
 			ResultSet rs = pstmt_getUserById.executeQuery();
-			System.out.println(pstmt_getUserById.toString());
 			if (rs.next())
 				u = new User(rs);
 			rs.close();

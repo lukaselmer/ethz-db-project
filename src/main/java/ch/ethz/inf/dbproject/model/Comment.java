@@ -15,8 +15,6 @@ public class Comment {
 	private final String text;
 	private final Date date;
 	
-	//foreign key Objects
-	private final User user;
 	
 	public Comment(final int id, final int user_id, final int project_id, final String text, final Date date) {
 		this.id = id;
@@ -25,7 +23,6 @@ public class Comment {
 		this.text = text;
 		this.date = date;
 		
-		this.user = new DatastoreInterface().getUserById(user_id);
 	}
 	
 	public Comment(final ResultSet rs) throws SQLException {
@@ -34,7 +31,6 @@ public class Comment {
 		this.project_id = rs.getInt("project_id");
 		this.text =  rs.getString("text");
 		this.date = rs.getDate("date");
-		this.user = new DatastoreInterface().getUserById(user_id);
 	}
 
 	public String getText() {
@@ -57,7 +53,7 @@ public class Comment {
 		return project_id;
 	}	
 	
-	public String getName(){
-		return user.getName();
+	public String getUsername(){
+		return new DatastoreInterface().getUserById(user_id).getName();
 	}
 }

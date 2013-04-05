@@ -15,8 +15,6 @@ public final class Project {
 	private final Date start;
 	private final Date end;
 
-	// foreign key Objects
-	private final User user;
 
 	/**
 	 * Construct a new project.
@@ -33,8 +31,6 @@ public final class Project {
 		this.goal = goal;
 		this.start = start;
 		this.end = end;
-		
-		this.user = new DatastoreInterface().getUserById(user_id);
 	}
 
 	public Project(final ResultSet rs) throws SQLException {
@@ -45,8 +41,6 @@ public final class Project {
 		this.goal = rs.getDouble("goal");
 		this.start = rs.getDate("start");
 		this.end = rs.getDate("end");
-		
-		this.user = new DatastoreInterface().getUserById(user_id);
 	}
 
 	public int getId() {
@@ -78,7 +72,7 @@ public final class Project {
 	}
 	
 	public String getOwner(){
-		return user.getName();
+		return new DatastoreInterface().getUserById(user_id).getName();
 	}
 
 }

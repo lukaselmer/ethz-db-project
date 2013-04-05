@@ -106,7 +106,7 @@ public final class ProjectServlet extends HttpServlet {
 					"commentTable" /* The table html class property */,
 					Comment.class 	/* The class of the objects (rows) that will bedisplayed */
 			);
-			commentTable.addBeanColumn("User", "name");
+			commentTable.addBeanColumn("User", "username");
 			commentTable.addBeanColumn("Comment", "text");
 			commentTable.addBeanColumn("Created", "date");
 			session.setAttribute("commentTable", commentTable);
