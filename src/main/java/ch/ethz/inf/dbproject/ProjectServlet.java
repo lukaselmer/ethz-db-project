@@ -99,7 +99,7 @@ public final class ProjectServlet extends HttpServlet {
 			/*******************************************************
 			 * Construct a table to present all comments
 			 *******************************************************/
-			final List<Comment> comments = this.dbInterface.getCommentsOfProject(id);
+			final List<Comment> comments = this.dbInterface.getCommentByProjectId(id);
 			final BeanTableHelper<Comment> commentTable = new BeanTableHelper<Comment>(
 					"comment" 		/* The table html id property */,
 					"commentTable" /* The table html class property */,

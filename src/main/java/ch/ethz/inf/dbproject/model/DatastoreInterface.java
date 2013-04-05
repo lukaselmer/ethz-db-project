@@ -1,5 +1,6 @@
 package ch.ethz.inf.dbproject.model;
 
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -37,24 +38,28 @@ public final class DatastoreInterface {
 	}
 
 	private MySQLConnection sqlConnection;
+	private PreparedStatement pstmt_getCommentsOfProject;
+	private PreparedStatement pstmt_getProjectById;
 
 	public DatastoreInterface() {
 		this.sqlConnection = MySQLConnection.getInstance();
+		try {
+			pstmt_getProjectById = this.sqlConnection.getConnection().prepareStatement("select * from project where id = ?");
+			pstmt_getCommentsOfProject = this.sqlConnection.getConnection().prepareStatement("select * from comment where project_id = ?");
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
 	}
 
 	public final Project getProjectById(final int id) {
 		Project p = null;
 
 		try {
-			final Statement stmt = this.sqlConnection.getConnection().createStatement();
-			final ResultSet rs = stmt.executeQuery("select * from project where id = " + id);
-
+			pstmt_getProjectById.setInt(1, id);
+			final ResultSet rs = pstmt_getProjectById.executeQuery();
 			if (rs.next())
 				p = new Project(rs);
-
 			rs.close();
-			stmt.close();
-
 		} catch (final SQLException ex) {
 			ex.printStackTrace();
 		}
@@ -79,30 +84,25 @@ public final class DatastoreInterface {
 
 		return projects;
 
-		// If you chose to use PreparedStatements instead of statements, you
-		// should prepare them in the constructor of DatastoreInterface.
-
 	}
 
-	public final List<Comment> getCommentsOfProject(Integer id) {
+	public final List<Comment> getCommentByProjectId(final int id) {
 		final List<Comment> comments = new ArrayList<Comment>();
 
 		try {
-			final Statement stmt = this.sqlConnection.getConnection().createStatement();
-			final ResultSet rs = stmt.executeQuery("select * from comment where project_id = " + id);
-			System.out.println("select * from comment where project_id = " + id);
+
+			pstmt_getCommentsOfProject.setInt(1, id);
+
+			final ResultSet rs = pstmt_getCommentsOfProject.executeQuery();
 			while (rs.next()) {
 				comments.add(new Comment(rs));
 			}
 			rs.close();
-			stmt.close();
 		} catch (final SQLException ex) {
 			ex.printStackTrace();
 		}
 		return comments;
 
 	}
-
-	// TODO Implement all missing data access methods
 
 }
