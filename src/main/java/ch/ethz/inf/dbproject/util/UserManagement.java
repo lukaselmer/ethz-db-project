@@ -15,5 +15,13 @@ public class UserManagement {
 		} else {
 			return (User) obj; 
 		}
-	}	
+	}
+	
+	public static final void setCurrentlyLoggedInUser (final HttpSession session, User user) {
+		session.setAttribute(SESSION_USER, user);
+	}
+	
+	public static final void logoutUser (final HttpSession session) {
+		session.removeAttribute(SESSION_USER);
+	}
 }

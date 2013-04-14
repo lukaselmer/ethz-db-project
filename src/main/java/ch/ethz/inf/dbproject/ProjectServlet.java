@@ -1,6 +1,8 @@
 package ch.ethz.inf.dbproject;
 
 import java.io.IOException;
+import java.sql.Date;
+import java.sql.Time;
 import java.util.List;
 
 import javax.servlet.ServletException;
@@ -14,6 +16,7 @@ import ch.ethz.inf.dbproject.model.FundingAmount;
 import ch.ethz.inf.dbproject.model.Comment;
 import ch.ethz.inf.dbproject.model.DatastoreInterface;
 import ch.ethz.inf.dbproject.model.Project;
+import ch.ethz.inf.dbproject.model.User;
 import ch.ethz.inf.dbproject.util.UserManagement;
 import ch.ethz.inf.dbproject.util.html.BeanTableHelper;
 
@@ -33,6 +36,31 @@ public final class ProjectServlet extends HttpServlet {
 		super();
 	}
 
+	/**
+	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
+	 */
+	protected final void doPost(final HttpServletRequest request, final HttpServletResponse response) throws ServletException, IOException {
+
+		final HttpSession session = request.getSession(true);
+
+		final String action = request.getParameter("action");
+		if (action != null) { 
+			if (action.trim().equals("new")) {
+
+				User loggedUser = UserManagement.getCurrentlyLoggedInUser(session);
+				int city_id = Integer.parseInt(request.getParameter("city_id"));
+				int category_id = Integer.parseInt(request.getParameter("category_id"));
+				String title = request.getParameter("title");
+				String description = request.getParameter("description");
+				double goal = Double.parseDouble(request.getParameter("goal"));
+				Date start = Date.valueOf(request.getParameter("start"));
+				Date end = Date.valueOf(request.getParameter("end"));
+				
+				Project p = dbInterface.insertProject(loggedUser.getId(), city_id, category_id, title, description, goal, start, end);
+			}
+		}
+	}
+	
 	/**
 	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
 	 */

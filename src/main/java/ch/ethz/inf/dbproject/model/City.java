@@ -6,7 +6,7 @@ import java.sql.SQLException;
 /**
  * This class represents a City
  */
-public final class City {
+public final class City implements ComboInterface {
 	private final int id;
 	private final String name;
 

@@ -1,9 +1,12 @@
 package ch.ethz.inf.dbproject.model;
 
+import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.sql.Time;
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -39,20 +42,49 @@ public final class DatastoreInterface {
 
 	private MySQLConnection sqlConnection;
 	private PreparedStatement pstmt_getCommentsOfProject;
+	private PreparedStatement pstmt_insertProject;
 	private PreparedStatement pstmt_getProjectById;
 	private PreparedStatement pstmt_getUserById;
+	private PreparedStatement pstmt_getUser;
 
 	
 	//dont get it why all prepared statements should be in the cTor.. but was a hint in this file..
 	public DatastoreInterface() {
 		this.sqlConnection = MySQLConnection.getInstance();
 		try {
+			pstmt_insertProject = this.sqlConnection.getConnection().prepareStatement("insert into project (user_id, city_id, category_id, title, description, goal, start, end) values (?, ?, ?, ?, ?, ?, ?, ?)");
 			pstmt_getProjectById = this.sqlConnection.getConnection().prepareStatement("select * from project where id = ?");
 			pstmt_getCommentsOfProject = this.sqlConnection.getConnection().prepareStatement("select * from comment where project_id = ?");
 			pstmt_getUserById = this.sqlConnection.getConnection().prepareStatement("select * from user where id = ?");
+			pstmt_getUser = this.sqlConnection.getConnection().prepareStatement("select * from user where name = ? and password = ?");
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
+	}
+	
+	public final Project insertProject (final int user_id, final int city_id, final int category_id, final String title, final String description, final double goal, final Date start,
+			final Date end) {
+		
+		Project p = null;
+
+		try {
+			pstmt_insertProject.setInt(1, user_id);
+			pstmt_insertProject.setInt(2, city_id);
+			pstmt_insertProject.setInt(3, category_id);
+			pstmt_insertProject.setString(4, title);
+			pstmt_insertProject.setString(5, description);
+			pstmt_insertProject.setDouble(6, goal);
+			pstmt_insertProject.setObject(7, new Timestamp(start.getTime()));
+			pstmt_insertProject.setObject(8, new Timestamp(end.getTime()));
+			
+			final boolean b = pstmt_insertProject.execute();
+			//if (b)
+				//p = new Project(rs);
+			//rs.close();
+		} catch (final SQLException ex) {
+			ex.printStackTrace();
+		}
+		return p;
 	}
 
 	public final Project getProjectById(final int id) {
@@ -82,6 +114,23 @@ public final class DatastoreInterface {
 		} catch (final SQLException ex) {
 			ex.printStackTrace();
 		}
+		return u;
+	}
+	
+	public User getUser (final String name, final String password) {
+		User u = null;
+		
+		try {
+			pstmt_getUser.setString(1, name);
+			pstmt_getUser.setString(2, password);
+			ResultSet rs = pstmt_getUser.executeQuery();
+			if (rs.next())
+				u = new User(rs);
+			rs.close();
+		} catch (final SQLException ex) {
+			ex.printStackTrace();
+		}
+		
 		return u;
 	}
 
@@ -123,4 +172,43 @@ public final class DatastoreInterface {
 		return comments;
 	}
 
+	public final List<City> getAllCities() {
+		final List<City> cities = new ArrayList<City>();
+		try {
+			final Statement stmt = this.sqlConnection.getConnection().createStatement();
+			final ResultSet rs = stmt.executeQuery("select * from city");
+
+			while (rs.next()) {
+				cities.add(new City(rs));
+			}
+
+			rs.close();
+			stmt.close();
+		} catch (final SQLException ex) {
+			ex.printStackTrace();
+		}
+
+		return cities;
+
+	}
+	
+	public final List<Category> getAllCategories() {
+		final List<Category> categories = new ArrayList<Category>();
+		try {
+			final Statement stmt = this.sqlConnection.getConnection().createStatement();
+			final ResultSet rs = stmt.executeQuery("select * from category");
+
+			while (rs.next()) {
+				categories.add(new Category(rs));
+			}
+
+			rs.close();
+			stmt.close();
+		} catch (final SQLException ex) {
+			ex.printStackTrace();
+		}
+
+		return categories;
+
+	}
 }

@@ -17,6 +17,47 @@ if ((Boolean) session.getAttribute(UserServlet.SESSION_USER_LOGGED_IN)) {
 //TODO: Display funded projects
 
 //TODO: Add possibility to create new projects (requires a form) 
+%>
+	<form action="Project" method="post">
+		<input type="hidden" name="action" value="new" />
+		<table>
+			<tr>
+				<th>Title</th>
+				<td><input type="text" name="title" value="" /></td>
+			</tr>
+			<tr>
+				<th>Description</th>
+				<td><input type="text" name="description" value="" /></td>
+			</tr>
+			<tr>
+				<th>Category</th>
+				<td><%= session.getAttribute(UserServlet.SESSION_CATEGORIES) %></td>
+			</tr>
+			<tr>
+				<th>City</th>
+				<td><%= session.getAttribute(UserServlet.SESSION_CITIES) %></td>
+			</tr>
+			<tr>
+				<th>Goal</th>
+				<td><input type="number" name="goal" value="" /></td>
+			</tr>
+			<tr>
+				<th>Start</th>
+				<td><input type="date" name="start" value="" /></td>
+			</tr>
+			<tr>
+				<th>End</th>
+				<td><input type="date" name="end" value="" /></td>
+			</tr>
+			<tr>
+				<th colspan="2">
+					<input type="submit" value="Add" />
+				</th>
+			</tr>
+		</table>
+	</form>
+
+<%
 	
 } else {
 	// User not logged in. Display the login form.
