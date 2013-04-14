@@ -82,25 +82,21 @@ public final class ProjectsServlet extends HttpServlet {
 
 		} else if (category != null) {
 
-			// TODO implement this!
-			//table.addObjects(this.dbInterface.getProjectsByCategory(category));
+			table.addObjects(this.dbInterface.getProjectsByCategory(Integer.parseInt(category)));
 			
 		} else if (filter != null) {
 		
 			if(filter.equals("popular")) {
 
-				// TODO implement this!
-				//table.addObjects(this.dbInterface.getMostPopularProjects());
+				table.addObjects(this.dbInterface.getMostPopularProjects());
 
 			} else if (filter.equals("funded")) {
 
-				// TODO implement this!
-				// table.addObjects(this.dbInterface.getMostFundedProjects());
+				table.addObjects(this.dbInterface.getMostFundedProjects());
 
 			} else if (filter.equals("ending")) {
 
-				// TODO implement this!
-				// table.addObjects(this.dbInterface.getSoonEndingProjects());
+				table.addObjects(this.dbInterface.getSoonEndingProjects());
 
 			}
 			

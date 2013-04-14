@@ -42,6 +42,7 @@ public final class DatastoreInterface {
 
 	private MySQLConnection sqlConnection;
 	private PreparedStatement pstmt_getCommentsOfProject;
+	private PreparedStatement pstmt_getProjectsByCategory;
 	private PreparedStatement pstmt_insertProject;
 	private PreparedStatement pstmt_getProjectById;
 	private PreparedStatement pstmt_getUserById;
@@ -54,6 +55,7 @@ public final class DatastoreInterface {
 		try {
 			pstmt_insertProject = this.sqlConnection.getConnection().prepareStatement("insert into project (user_id, city_id, category_id, title, description, goal, start, end) values (?, ?, ?, ?, ?, ?, ?, ?)");
 			pstmt_getProjectById = this.sqlConnection.getConnection().prepareStatement("select * from project where id = ?");
+			pstmt_getProjectsByCategory = this.sqlConnection.getConnection().prepareStatement("select * from project where category_id = ?");
 			pstmt_getCommentsOfProject = this.sqlConnection.getConnection().prepareStatement("select * from comment where project_id = ?");
 			pstmt_getUserById = this.sqlConnection.getConnection().prepareStatement("select * from user where id = ?");
 			pstmt_getUser = this.sqlConnection.getConnection().prepareStatement("select * from user where name = ? and password = ?");
@@ -134,6 +136,7 @@ public final class DatastoreInterface {
 		return u;
 	}
 
+
 	public final List<Project> getAllProjects() {
 		final List<Project> projects = new ArrayList<Project>();
 		try {
@@ -152,6 +155,87 @@ public final class DatastoreInterface {
 
 		return projects;
 
+	}
+
+
+	public final List<Project> getSoonEndingProjects() {
+		final List<Project> projects = new ArrayList<Project>();
+		try {
+			final Statement stmt = this.sqlConnection.getConnection().createStatement();
+			final ResultSet rs = stmt.executeQuery("select * from project where end > NOW() order by end asc limit 2");
+
+			while (rs.next()) {
+				projects.add(new Project(rs));
+			}
+
+			rs.close();
+			stmt.close();
+		} catch (final SQLException ex) {
+			ex.printStackTrace();
+		}
+
+		return projects;
+
+	}
+
+
+	public final List<Project> getMostFundedProjects() {
+		final List<Project> projects = new ArrayList<Project>();
+		try {
+			final Statement stmt = this.sqlConnection.getConnection().createStatement();
+			final ResultSet rs = stmt.executeQuery("select project_id from fund left join (funding_amount) on (fund.funding_amount_id = funding_amount.id) group by project_id order by sum(amount) desc limit 2");
+
+			while (rs.next()) {
+				projects.add(getProjectById(rs.getInt("project_id")));
+			}
+
+			rs.close();
+			stmt.close();
+		} catch (final SQLException ex) {
+			ex.printStackTrace();
+		}
+
+		return projects;
+
+	}
+	
+	public final List<Project> getMostPopularProjects() {
+		final List<Project> projects = new ArrayList<Project>();
+		try {
+			final Statement stmt = this.sqlConnection.getConnection().createStatement();
+			final ResultSet rs = stmt.executeQuery("select project_id from fund left join (funding_amount) ON (fund.funding_amount_id = funding_amount.id) group by project_id order by count(*) desc limit 2");
+
+			while (rs.next()) {
+				projects.add(getProjectById(rs.getInt("project_id")));
+			}
+
+			rs.close();
+			stmt.close();
+		} catch (final SQLException ex) {
+			ex.printStackTrace();
+		}
+
+		return projects;
+
+	}
+	
+	public final List<Project> getProjectsByCategory (final int category_id) {
+		final List<Project> projects = new ArrayList<Project>();
+
+		try {
+
+			pstmt_getProjectsByCategory.setInt(1, category_id);
+
+			final ResultSet rs = pstmt_getProjectsByCategory.executeQuery();
+			while (rs.next()) {
+				projects.add(new Project(rs));
+			}
+			rs.close();
+		} catch (final SQLException ex) {
+			ex.printStackTrace();
+		}
+		return projects;
+		
 	}
 
 	public final List<Comment> getCommentsByProjectId(final int id) {

@@ -1,4 +1,7 @@
 <!DOCTYPE html>
+<%@page import="ch.ethz.inf.dbproject.model.DatastoreInterface"%>
+<%@page import="java.util.List"%>
+<%@page import="ch.ethz.inf.dbproject.model.Category"%>
 <html>
 	
 	<head>
@@ -54,10 +57,11 @@
 	              <li class="dropdown">
 	                <a href="#" class="dropdown-toggle" data-toggle="dropdown">Categories <b class="caret"></b></a>
 	                <ul class="dropdown-menu">
-					  <li><a href="Projects?category=art">Art</a></li>
-					  <li><a href="Projects?category=comics">Comics</a></li>
-					  <li><a href="Projects?category=music">Music</a></li>
-					  <li><a href="Projects?category=other">...</a></li>
+	                <%
+	                	for (Category cat : new DatastoreInterface().getAllCategories()) {
+	                		%><li><a href="Projects?category=<%= cat.getId() %>"><%= cat.getName() %></a></li><%
+	                	}
+	                %>
 	                  <!-- <li class="divider"></li>
 	                  <li class="nav-header">Nav header</li>
 	                  <li><a href="#">Separated link</a></li>

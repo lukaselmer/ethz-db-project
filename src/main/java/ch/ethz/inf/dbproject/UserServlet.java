@@ -26,8 +26,6 @@ public final class UserServlet extends HttpServlet {
 
 	public final static String SESSION_USER_LOGGED_IN = "userLoggedIn";
 	public final static String SESSION_USER_DETAILS = "userDetails";
-	public final static String SESSION_CATEGORIES = "categories";
-	public final static String SESSION_CITIES = "cities";
 
 	/**
 	 * @see HttpServlet#HttpServlet()
@@ -83,8 +81,8 @@ public final class UserServlet extends HttpServlet {
 			final ComboHelper categories = new ComboHelper ("category_id", (List<ComboInterface>)(List<?>)dbInterface.getAllCategories());
 			final ComboHelper cities = new ComboHelper ("city_id", (List<ComboInterface>)(List<?>)dbInterface.getAllCities());
 
-			session.setAttribute(SESSION_CITIES , cities);
-			session.setAttribute(SESSION_CATEGORIES , categories);
+			request.setAttribute("cities_combo" , cities);
+			request.setAttribute("categories_combo" , categories);
 			session.setAttribute(SESSION_USER_LOGGED_IN, true);
 			session.setAttribute(SESSION_USER_DETAILS, userDetails);
 		}

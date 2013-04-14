@@ -31,11 +31,11 @@ if ((Boolean) session.getAttribute(UserServlet.SESSION_USER_LOGGED_IN)) {
 			</tr>
 			<tr>
 				<th>Category</th>
-				<td><%= session.getAttribute(UserServlet.SESSION_CATEGORIES) %></td>
+				<td>${categories_combo}</td>
 			</tr>
 			<tr>
 				<th>City</th>
-				<td><%= session.getAttribute(UserServlet.SESSION_CITIES) %></td>
+				<td>${cities_combo}</td>
 			</tr>
 			<tr>
 				<th>Goal</th>
