@@ -12,6 +12,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import ch.ethz.inf.dbproject.model.ComboInterface;
 import ch.ethz.inf.dbproject.model.FundingAmount;
 import ch.ethz.inf.dbproject.model.Comment;
 import ch.ethz.inf.dbproject.model.DatastoreInterface;
@@ -19,6 +20,7 @@ import ch.ethz.inf.dbproject.model.Project;
 import ch.ethz.inf.dbproject.model.User;
 import ch.ethz.inf.dbproject.util.UserManagement;
 import ch.ethz.inf.dbproject.util.html.BeanTableHelper;
+import ch.ethz.inf.dbproject.util.html.ComboHelper;
 
 /**
  * Servlet implementation class of Project Details Page
@@ -44,10 +46,12 @@ public final class ProjectServlet extends HttpServlet {
 		final HttpSession session = request.getSession(true);
 
 		final String action = request.getParameter("action");
-		if (action != null) { 
+		final User loggedUser = UserManagement.getCurrentlyLoggedInUser(session);
+		
+		if (action != null && loggedUser != null) { 
+			
+			// New Project
 			if (action.trim().equals("new")) {
-
-				User loggedUser = UserManagement.getCurrentlyLoggedInUser(session);
 				int city_id = Integer.parseInt(request.getParameter("city_id"));
 				int category_id = Integer.parseInt(request.getParameter("category_id"));
 				String title = request.getParameter("title");
@@ -56,7 +60,22 @@ public final class ProjectServlet extends HttpServlet {
 				Date start = Date.valueOf(request.getParameter("start"));
 				Date end = Date.valueOf(request.getParameter("end"));
 				
-				Project p = dbInterface.insertProject(loggedUser.getId(), city_id, category_id, title, description, goal, start, end);
+				this.dbInterface.insertProject(loggedUser.getId(), city_id, category_id, title, description, goal, start, end);
+			
+			// New Comment
+			} else if (action.trim().equals("add_comment")) {
+		
+				String comment = request.getParameter("comment");
+				int project_id = Integer.parseInt(request.getParameter("project_id"));
+				
+				this.dbInterface.insertComment(loggedUser.getId(), project_id, comment);
+			
+			// New Fund
+			} else if (action.trim().equals("fund")) {
+
+				int funding_amount_id = Integer.parseInt(request.getParameter("funding_amount_id"));
+				
+				this.dbInterface.insertFund(loggedUser.getId(), funding_amount_id);
 			}
 		}
 	}
@@ -66,8 +85,6 @@ public final class ProjectServlet extends HttpServlet {
 	 */
 	protected final void doGet(final HttpServletRequest request, final HttpServletResponse response) throws ServletException, IOException {
 
-		final HttpSession session = request.getSession(true);
-
 		final String idString = request.getParameter("id");
 		if (idString == null) {
 			this.getServletContext().getRequestDispatcher("/Projects").forward(request, response);
@@ -75,70 +92,16 @@ public final class ProjectServlet extends HttpServlet {
 
 		try {
 
-			final Integer id = Integer.parseInt(idString);
-			final Project project = this.dbInterface.getProjectById(id);
+			final int project_id = Integer.parseInt(idString);
+			request.setAttribute("project_id", project_id);
 
+			// Create tables and store them in the request
+			request.setAttribute("projectTable", createProjectDetailTable(project_id));			
+			request.setAttribute("amountTable", createFundingAmountTable(project_id));
+			request.setAttribute("commentTable", createCommentsTable(project_id));
 			
-			/*******************************************************
-			 * Construct a table to present all properties of a project
-			 *******************************************************/
-			final BeanTableHelper<Project> table = new BeanTableHelper<Project>(
-					"projects" 		/* The table html id property */,
-					"projectTable" /* The table html class property */,
-					Project.class 	/* The class of the objects (rows) that will be displayed */
-			);
-
-			// Add columns to the new table
-
-			table.addBeanColumn("Project Title", "title");
-			table.addBeanColumn("Description", "description");
-			table.addBeanColumn("Owner", "owner");
-			table.addBeanColumn("Goal", "goal");
-			table.addBeanColumn("Start", "start");
-			table.addBeanColumn("End", "end");
-
-			table.addObject(project);
-			table.setVertical(true);			
-
-			session.setAttribute("projectTable", table);			
-			
-			/*******************************************************
-			 * Construct a table for all payment amounts
-			 *******************************************************/
-			//TODO implement this
-			//List<Amount> comments = this.dbInterface.getAmountsOfProject(id);
-			//Create a table to display the amounts the same way as above
-			//The table needs to have a link column the allows a registered user to fund that amount
-			//We need to catch the click a store the funding in the database
-			//session.setAttribute("amountTable", table);
-			
-			/***
-			 * Check if we new to add a comment
-			 */
-			final String action = request.getParameter("action");
-			if (action != null && action.trim().equals("add_comment")) {
-				String username = UserManagement.getCurrentlyLoggedInUser(session).getName();
-				String comment = request.getParameter("comment");
-				//Comment commentObj = new Comment(username, comment);
-				
-				//TODO implement this
-				//this.dbInterface.addCommentForProject(id, commentObj);
-			}
-			
-			/*******************************************************
-			 * Construct a table to present all comments
-			 *******************************************************/
-			final List<Comment> comments = this.dbInterface.getCommentsByProjectId(id);
-			final BeanTableHelper<Comment> commentTable = new BeanTableHelper<Comment>(
-					"comment" 		/* The table html id property */,
-					"commentTable" /* The table html class property */,
-					Comment.class 	/* The class of the objects (rows) that will bedisplayed */
-			);
-			commentTable.addBeanColumn("User", "username");
-			commentTable.addBeanColumn("Comment", "text");
-			commentTable.addBeanColumn("Created", "date");
-			session.setAttribute("commentTable", commentTable);
-			commentTable.addObjects(comments);
+			final ComboHelper fundingAmountCombo = new ComboHelper ("funding_amount_id", (List<ComboInterface>)(List<?>)dbInterface.getFundingAmountsOfProject(project_id));
+			request.setAttribute("fundingAmountCombo", fundingAmountCombo);
 			
 		} catch (final Exception ex) {
 			ex.printStackTrace();
@@ -146,5 +109,76 @@ public final class ProjectServlet extends HttpServlet {
 		}
 
 		this.getServletContext().getRequestDispatcher("/Project.jsp").forward(request, response);
+	}
+
+	
+	/*******************************************************
+	 * Construct a table to present all properties of a project
+	 *******************************************************/
+	private String createProjectDetailTable (final int project_id) {
+		final Project project = this.dbInterface.getProjectById(project_id);
+		final BeanTableHelper<Project> table = new BeanTableHelper<Project>(
+				"projects" 		/* The table html id property */,
+				"projectTable" /* The table html class property */,
+				Project.class 	/* The class of the objects (rows) that will be displayed */
+		);
+	
+		// Add columns to the new table
+	
+		table.addBeanColumn("Project Title", "title");
+		table.addBeanColumn("Description", "description");
+		table.addBeanColumn("Owner", "owner");
+		table.addBeanColumn("Goal", "goal");
+		table.addBeanColumn("Start", "start");
+		table.addBeanColumn("End", "end");
+	
+		table.addObject(project);
+		table.setVertical(true);
+		
+		return table.generateHtmlCode();
+	}
+	
+	
+	/*******************************************************
+	 * Construct a table to present all comments
+	 *******************************************************/
+	private String createCommentsTable (final int project_id) {
+		final List<Comment> comments = this.dbInterface.getCommentsByProjectId(project_id);
+		final BeanTableHelper<Comment> commentTable = new BeanTableHelper<Comment>(
+				"comment" 		/* The table html id property */,
+				"commentTable" /* The table html class property */,
+				Comment.class 	/* The class of the objects (rows) that will be displayed */
+		);
+		
+		commentTable.addBeanColumn("User", "username");
+		commentTable.addBeanColumn("Comment", "text");
+		commentTable.addBeanColumn("Created", "date");
+		
+		commentTable.addObjects(comments);
+		
+		return commentTable.generateHtmlCode();
+	}
+	
+
+	/*******************************************************
+	 * Construct a table for all payment amounts
+	 *******************************************************/
+	private String createFundingAmountTable(final int project_id) {
+		List<FundingAmount> fundingAmounts = this.dbInterface.getFundingAmountsOfProject(project_id);
+		
+		final BeanTableHelper<FundingAmount> fundingAmountsTable = new BeanTableHelper<FundingAmount>(
+				"fundingAmounts" 		/* The table html id property */,
+				"fundingAmountsTable" /* The table html class property */,
+				FundingAmount.class 	/* The class of the objects (rows) that will be displayed */
+		);
+
+		// Add columns to the new table
+		fundingAmountsTable.addBeanColumn("Reward", "reward");
+		fundingAmountsTable.addBeanColumn("Amount", "amount");
+		//fundingAmountsTable.addLinkColumn("", "Fund", "Project?action=fund&funding_amount_id=", "id");
+
+		fundingAmountsTable.addObjects(fundingAmounts);
+		
+		return fundingAmountsTable.generateHtmlCode();
 	}
 }

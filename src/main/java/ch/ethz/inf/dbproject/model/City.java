@@ -28,4 +28,8 @@ public final class City implements ComboInterface {
 	public int getId() {
 		return id;
 	}
+	
+	public String toString() {
+		return name;
+	}
 }

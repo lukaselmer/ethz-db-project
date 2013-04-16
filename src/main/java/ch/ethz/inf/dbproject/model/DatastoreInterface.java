@@ -44,18 +44,24 @@ public final class DatastoreInterface {
 	private PreparedStatement pstmt_getCommentsOfProject;
 	private PreparedStatement pstmt_getProjectsByCategory;
 	private PreparedStatement pstmt_insertProject;
+	private PreparedStatement pstmt_insertComment;
+	private PreparedStatement pstmt_insertFund;
 	private PreparedStatement pstmt_getProjectById;
 	private PreparedStatement pstmt_getUserById;
 	private PreparedStatement pstmt_getUser;
+	private PreparedStatement pstmt_getFundingAmountsOfProject;
 
 	
 	//dont get it why all prepared statements should be in the cTor.. but was a hint in this file..
 	public DatastoreInterface() {
 		this.sqlConnection = MySQLConnection.getInstance();
 		try {
+			pstmt_insertFund = this.sqlConnection.getConnection().prepareStatement("insert into fund (user_id, funding_amount_id) values (?, ?)");
+			pstmt_insertComment = this.sqlConnection.getConnection().prepareStatement("insert into comment (user_id, project_id, text, date) values (?, ?, ?, NOW())");
 			pstmt_insertProject = this.sqlConnection.getConnection().prepareStatement("insert into project (user_id, city_id, category_id, title, description, goal, start, end) values (?, ?, ?, ?, ?, ?, ?, ?)");
 			pstmt_getProjectById = this.sqlConnection.getConnection().prepareStatement("select * from project where id = ?");
 			pstmt_getProjectsByCategory = this.sqlConnection.getConnection().prepareStatement("select * from project where category_id = ?");
+			pstmt_getFundingAmountsOfProject = this.sqlConnection.getConnection().prepareStatement("select * from funding_amount where project_id = ?");
 			pstmt_getCommentsOfProject = this.sqlConnection.getConnection().prepareStatement("select * from comment where project_id = ?");
 			pstmt_getUserById = this.sqlConnection.getConnection().prepareStatement("select * from user where id = ?");
 			pstmt_getUser = this.sqlConnection.getConnection().prepareStatement("select * from user where name = ? and password = ?");
@@ -64,11 +70,39 @@ public final class DatastoreInterface {
 		}
 	}
 	
-	public final Project insertProject (final int user_id, final int city_id, final int category_id, final String title, final String description, final double goal, final Date start,
+	public final void insertFund (final int user_id, final int funding_amount_id) {
+		
+		try {
+			pstmt_insertFund.setInt(1, user_id);
+			pstmt_insertFund.setInt(2, funding_amount_id);
+			
+			pstmt_insertFund.execute();
+			
+			// TODO: error-handling
+		} catch (final SQLException ex) {
+			ex.printStackTrace();
+		}
+	}
+	
+	
+	public final void insertComment (final int user_id, final int project_id, final String text) {
+		
+		try {
+			pstmt_insertComment.setInt(1, user_id);
+			pstmt_insertComment.setInt(2, project_id);
+			pstmt_insertComment.setString(3, text);
+			
+			pstmt_insertComment.execute();
+			
+			// TODO: error-handling
+		} catch (final SQLException ex) {
+			ex.printStackTrace();
+		}
+	}
+	
+	public final void insertProject (final int user_id, final int city_id, final int category_id, final String title, final String description, final double goal, final Date start,
 			final Date end) {
 		
-		Project p = null;
-
 		try {
 			pstmt_insertProject.setInt(1, user_id);
 			pstmt_insertProject.setInt(2, city_id);
@@ -79,14 +113,12 @@ public final class DatastoreInterface {
 			pstmt_insertProject.setObject(7, new Timestamp(start.getTime()));
 			pstmt_insertProject.setObject(8, new Timestamp(end.getTime()));
 			
-			final boolean b = pstmt_insertProject.execute();
-			//if (b)
-				//p = new Project(rs);
-			//rs.close();
+			pstmt_insertProject.execute();
+			
+			// TODO: error-handling
 		} catch (final SQLException ex) {
 			ex.printStackTrace();
 		}
-		return p;
 	}
 
 	public final Project getProjectById(final int id) {
@@ -104,6 +136,25 @@ public final class DatastoreInterface {
 		return p;
 	}
 
+	public final List<FundingAmount> getFundingAmountsOfProject (final int project_id) {
+
+		final List<FundingAmount> funding_amounts = new ArrayList<FundingAmount>();
+
+		try {
+
+			pstmt_getFundingAmountsOfProject.setInt(1, project_id);
+
+			final ResultSet rs = pstmt_getFundingAmountsOfProject.executeQuery();
+			while (rs.next()) {
+				funding_amounts.add(new FundingAmount(rs));
+			}
+			rs.close();
+		} catch (final SQLException ex) {
+			ex.printStackTrace();
+		}
+		return funding_amounts;
+	}
+	
 	public final User getUserById(final int id) {
 		User u = null;
 

@@ -6,7 +6,7 @@ import java.sql.SQLException;
 /**
  * Object that represents a funding amount.
  */
-public class FundingAmount {
+public class FundingAmount implements ComboInterface {
 
 	private final int id;
 	private final double amount;
@@ -34,5 +34,9 @@ public class FundingAmount {
 
 	public int getId() {
 		return id;
-	}		
+	}
+	
+	public String toString() {;
+		return "[" + amount + "]: " + reward;
+	}
 }

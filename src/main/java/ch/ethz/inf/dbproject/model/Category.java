@@ -31,4 +31,8 @@ public final class Category implements ComboInterface {
 		return id;
 	}
 	
+	public String toString() {
+		return name;
+	}
+	
 }

@@ -22,7 +22,7 @@ public final class ComboHelper extends HtmlHelperIface {
 		sb.append("<!-- ComboHelper Generated Code -->\n");
 		sb.append("<select class=\"select\" name=\""+ name + "\">\n");
 		for (ComboInterface item : items) {
-			sb.append("\t<option value=\""+ item.getId() +"\">"+ item.getName() +"</option>\n");
+			sb.append("\t<option value=\""+ item.getId() +"\">"+ item.toString() +"</option>\n");
 		}
 		sb.append("</select>\n");
 		
