@@ -41,15 +41,20 @@ public final class DatastoreInterface {
 	}
 
 	private MySQLConnection sqlConnection;
-	private PreparedStatement pstmt_getCommentsOfProject;
-	private PreparedStatement pstmt_getProjectsByCategory;
 	private PreparedStatement pstmt_insertProject;
 	private PreparedStatement pstmt_insertComment;
 	private PreparedStatement pstmt_insertFund;
+	
+	private PreparedStatement pstmt_getCommentsOfProject;
+	private PreparedStatement pstmt_getProjectsByCategory;
 	private PreparedStatement pstmt_getProjectById;
 	private PreparedStatement pstmt_getUserById;
 	private PreparedStatement pstmt_getUser;
 	private PreparedStatement pstmt_getFundingAmountsOfProject;
+
+	private PreparedStatement pstmt_searchProjectByTitle;
+	private PreparedStatement pstmt_searchProjectByCategory;
+	private PreparedStatement pstmt_searchProjectByCity;
 
 	
 	//dont get it why all prepared statements should be in the cTor.. but was a hint in this file..
@@ -59,16 +64,76 @@ public final class DatastoreInterface {
 			pstmt_insertFund = this.sqlConnection.getConnection().prepareStatement("insert into fund (user_id, funding_amount_id) values (?, ?)");
 			pstmt_insertComment = this.sqlConnection.getConnection().prepareStatement("insert into comment (user_id, project_id, text, date) values (?, ?, ?, NOW())");
 			pstmt_insertProject = this.sqlConnection.getConnection().prepareStatement("insert into project (user_id, city_id, category_id, title, description, goal, start, end) values (?, ?, ?, ?, ?, ?, ?, ?)");
+			
 			pstmt_getProjectById = this.sqlConnection.getConnection().prepareStatement("select * from project where id = ?");
 			pstmt_getProjectsByCategory = this.sqlConnection.getConnection().prepareStatement("select * from project where category_id = ?");
 			pstmt_getFundingAmountsOfProject = this.sqlConnection.getConnection().prepareStatement("select * from funding_amount where project_id = ?");
 			pstmt_getCommentsOfProject = this.sqlConnection.getConnection().prepareStatement("select * from comment where project_id = ?");
 			pstmt_getUserById = this.sqlConnection.getConnection().prepareStatement("select * from user where id = ?");
 			pstmt_getUser = this.sqlConnection.getConnection().prepareStatement("select * from user where name = ? and password = ?");
+
+			pstmt_searchProjectByTitle = this.sqlConnection.getConnection().prepareStatement("select * from project where title like ?");
+			pstmt_searchProjectByCategory = this.sqlConnection.getConnection().prepareStatement("select * from project left join(category) on (project.category_id = category.id) where category.name like ?");
+			pstmt_searchProjectByCity = this.sqlConnection.getConnection().prepareStatement("select * from project left join(city) on (project.city_id = city.id) where city.name like ?");
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
 	}
+	
+	public final List<Project> searchProjectByCity (final String city) {
+		final List<Project> projects = new ArrayList<Project>();
+
+		try {
+
+			pstmt_searchProjectByCity.setString(1, city);
+
+			final ResultSet rs = pstmt_searchProjectByCity.executeQuery();
+			while (rs.next()) {
+				projects.add(new Project(rs));
+			}
+			rs.close();
+		} catch (final SQLException ex) {
+			ex.printStackTrace();
+		}
+		return projects;
+	}
+
+	public final List<Project> searchProjectByCategory (final String category) {
+		final List<Project> projects = new ArrayList<Project>();
+
+		try {
+
+			pstmt_searchProjectByCategory.setString(1, category);
+
+			final ResultSet rs = pstmt_searchProjectByCategory.executeQuery();
+			while (rs.next()) {
+				projects.add(new Project(rs));
+			}
+			rs.close();
+		} catch (final SQLException ex) {
+			ex.printStackTrace();
+		}
+		return projects;
+	}
+	
+	public final List<Project> searchProjectByTitle (final String title) {
+		final List<Project> projects = new ArrayList<Project>();
+
+		try {
+
+			pstmt_searchProjectByTitle.setString(1, title);
+
+			final ResultSet rs = pstmt_searchProjectByTitle.executeQuery();
+			while (rs.next()) {
+				projects.add(new Project(rs));
+			}
+			rs.close();
+		} catch (final SQLException ex) {
+			ex.printStackTrace();
+		}
+		return projects;
+	}
+	
 	
 	public final void insertFund (final int user_id, final int funding_amount_id) {
 		

@@ -7,41 +7,18 @@
 
 <form method="get" action="Search">
 <div>
-	<input type="hidden" name="filter" value="name" />
-	Search By Name:
-	<input type="text" name="name" />
-	<input type="submit" value="Search" title="Search by Name" />
+	<select name="filter">
+		<option value="title">Title</option>
+		<option value="category">Category</option>
+		<option value="city">City</option>
+	</select>
+	<input type="text" name="search" />
+	<input type="submit" value="Search" title="Search" />
 </div>
 </form>
 
 <hr/>
-
-<form method="get" action="Search">
-<div>
-	<input type="hidden" name="filter" value="category" />
-	Search By Category:
-	<input type="text" name="name" />
-	<input type="submit" value="Search" title="Search by Category" />
-</div>
-</form>
-
-<hr/>
-
-<form method="get" action="Search">
-<div>
-	<input type="hidden" name="filter" value="city" />
-	Search By City:
-	<input type="text" name="name" />
-	<input type="submit" value="Search" title="Search by City" />
-</div>
-</form>
-
-<hr/>
-<%  
-	//TODO Display search results 
-	// session.getAttribute("results");
-%>
-
+${results}
 <hr/>
 
 <%@ include file="Footer.jsp" %>

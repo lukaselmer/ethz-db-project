@@ -9,6 +9,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import ch.ethz.inf.dbproject.model.DatastoreInterface;
 import ch.ethz.inf.dbproject.model.Project;
 import ch.ethz.inf.dbproject.util.html.BeanTableHelper;
 
@@ -19,6 +20,7 @@ import ch.ethz.inf.dbproject.util.html.BeanTableHelper;
 public final class SearchServlet extends HttpServlet {
 	
 	private static final long serialVersionUID = 1L;
+	private final DatastoreInterface dbInterface = new DatastoreInterface();
 		
     /**
      * @see HttpServlet#HttpServlet()
@@ -44,17 +46,9 @@ public final class SearchServlet extends HttpServlet {
 		);
 
 		// Add columns to the new table
-
-		/*
-		 * Column 1: The name of the item (This will probably have to be changed)
-		 */
-		table.addBeanColumn("Project Name", "name");
-
-		/*
-		 * Columns 2 & 3: Some random fields. These should be replaced by i.e. funding progress, or time remaining
-		 */
-		table.addBeanColumn("Test Field2", "field2");
-		table.addBeanColumn("Test Integer Field 3", "field3");
+		table.addBeanColumn("Project Title", "title");
+		table.addBeanColumn("Start", "start");
+		table.addBeanColumn("End", "end");
 
 		/*
 		 * Column 4: This is a special column. It adds a link to view the
@@ -72,25 +66,17 @@ public final class SearchServlet extends HttpServlet {
 		final String filter = request.getParameter("filter");
 
 		if (filter != null) {
-		
-			if(filter.equals("name")) {
-
-				// TODO implement this!
-				//final String name = request.getParameter("name");
-				//table.addObjects(this.dbInterface.searchByName(name));
+			
+			final String search = request.getParameter("search");
+			
+			if(filter.equals("title")) {
+				table.addObjects(this.dbInterface.searchProjectByTitle(search));
 
 			} else if (filter.equals("category")) {
-
-				// TODO implement this!
-				//final String name = request.getParameter("category");
-				// table.addObjects(this.dbInterface.searchByCategory(category));
+				table.addObjects(this.dbInterface.searchProjectByCategory(search));
 
 			} else if (filter.equals("city")) {
-
-				// TODO implement this!
-				//final String name = request.getParameter("city");
-				// table.addObjects(this.dbInterface.searchByCity(city));
-
+				table.addObjects(this.dbInterface.searchProjectByCity(search));
 			}			
 		}
 

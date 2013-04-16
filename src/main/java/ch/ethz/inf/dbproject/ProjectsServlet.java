@@ -47,22 +47,9 @@ public final class ProjectsServlet extends HttpServlet {
 		);
 
 		// Add columns to the new table
-
-		/*
-		 * Column 1: The name of the item (This will probably have to be changed)
-		 */
 		table.addBeanColumn("Project Title", "title");
-
-		/*
-		 * Columns 2 & 3: Some random fields. These should be replaced by i.e. funding progress, or time remaining
-		 */
 		table.addBeanColumn("Start", "start");
 		table.addBeanColumn("End", "end");
-
-		/*
-		 * Column 4: This is a special column. It adds a link to view the
-		 * Project. We need to pass the project identifier to the url.
-		 */
 		table.addLinkColumn(""	/* The header. We will leave it empty */,
 				"View Project" 	/* What should be displayed in every row */,
 				"Project?id=" 	/* This is the base url. The final url will be composed from the concatenation of this and the parameter below */, 
