@@ -4,6 +4,8 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Date;
 
+import ch.ethz.inf.dbproject.model.access.UserAccess;
+
 public final class Project {
 
 	// TODO memeber for foreignkeys (category, city, user)
@@ -72,7 +74,7 @@ public final class Project {
 	}
 	
 	public String getOwner(){
-		return new DatastoreInterface().getUserById(user_id).getName();
+		return UserAccess.getInstance().getUserById(user_id).getName();
 	}
 
 }

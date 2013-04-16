@@ -1,5 +1,6 @@
 <!DOCTYPE html>
-<%@page import="ch.ethz.inf.dbproject.model.DatastoreInterface"%>
+<%@page import="ch.ethz.inf.dbproject.model.access.CategoryAccess"%>
+<%@page import="ch.ethz.inf.dbproject.model.access.DatastoreInterface"%>
 <%@page import="java.util.List"%>
 <%@page import="ch.ethz.inf.dbproject.model.Category"%>
 <html>
@@ -58,14 +59,20 @@
 	                <a href="#" class="dropdown-toggle" data-toggle="dropdown">Categories <b class="caret"></b></a>
 	                <ul class="dropdown-menu">
 	                <%
-	                	for (Category cat : new DatastoreInterface().getAllCategories()) {
+	                	for (Category cat : CategoryAccess.getInstance().getAllCategories()) {
 	                		%><li><a href="Projects?category=<%= cat.getId() %>"><%= cat.getName() %></a></li><%
 	                	}
 	                %>
-	                  <!-- <li class="divider"></li>
-	                  <li class="nav-header">Nav header</li>
-	                  <li><a href="#">Separated link</a></li>
-	                  <li><a href="#">One more separated link</a></li> -->
+	                  <li class="divider"></li>
+	                  <li><a href="Category">Manage Categories</a></li>
+	                  <li><a href="Category?action=new">New Category</a></li>
+	                </ul>
+	              </li>
+	              <li class="dropdown">
+	                <a href="#" class="dropdown-toggle" data-toggle="dropdown">Cities <b class="caret"></b></a>
+	                <ul class="dropdown-menu">
+	                  <li><a href="City">Manage Cities</a></li>
+	                  <li><a href="City?action=new">New City</a></li>
 	                </ul>
 	              </li>
 	              <li><a href="Search">Search</a></li>

@@ -2,7 +2,6 @@ package ch.ethz.inf.dbproject;
 
 import java.io.IOException;
 import java.sql.Date;
-import java.sql.Time;
 import java.util.List;
 
 import javax.servlet.ServletException;
@@ -15,9 +14,12 @@ import javax.servlet.http.HttpSession;
 import ch.ethz.inf.dbproject.model.ComboInterface;
 import ch.ethz.inf.dbproject.model.FundingAmount;
 import ch.ethz.inf.dbproject.model.Comment;
-import ch.ethz.inf.dbproject.model.DatastoreInterface;
 import ch.ethz.inf.dbproject.model.Project;
 import ch.ethz.inf.dbproject.model.User;
+import ch.ethz.inf.dbproject.model.access.CategoryAccess;
+import ch.ethz.inf.dbproject.model.access.CityAccess;
+import ch.ethz.inf.dbproject.model.access.DatastoreInterface;
+import ch.ethz.inf.dbproject.model.access.ProjectAccess;
 import ch.ethz.inf.dbproject.util.UserManagement;
 import ch.ethz.inf.dbproject.util.html.BeanTableHelper;
 import ch.ethz.inf.dbproject.util.html.ComboHelper;
@@ -29,7 +31,7 @@ import ch.ethz.inf.dbproject.util.html.ComboHelper;
 public final class ProjectServlet extends HttpServlet {
 
 	private static final long serialVersionUID = 1L;
-	private final DatastoreInterface dbInterface = new DatastoreInterface();
+	private final ProjectAccess dbInterface = ProjectAccess.getInstance();
 
 	/**
 	 * @see HttpServlet#HttpServlet()
@@ -50,6 +52,8 @@ public final class ProjectServlet extends HttpServlet {
 		
 		if (action != null && loggedUser != null) { 
 			
+			int project_id = -1;
+			
 			// New Project
 			if (action.trim().equals("new")) {
 				int city_id = Integer.parseInt(request.getParameter("city_id"));
@@ -60,23 +64,31 @@ public final class ProjectServlet extends HttpServlet {
 				Date start = Date.valueOf(request.getParameter("start"));
 				Date end = Date.valueOf(request.getParameter("end"));
 				
-				this.dbInterface.insertProject(loggedUser.getId(), city_id, category_id, title, description, goal, start, end);
-			
+				project_id = dbInterface.insertProject(loggedUser.getId(), city_id, category_id, title, description, goal, start, end);
+				
 			// New Comment
 			} else if (action.trim().equals("add_comment")) {
-		
 				String comment = request.getParameter("comment");
-				int project_id = Integer.parseInt(request.getParameter("project_id"));
+				project_id = Integer.parseInt(request.getParameter("project_id"));
 				
-				this.dbInterface.insertComment(loggedUser.getId(), project_id, comment);
+				DatastoreInterface.getInstance().insertComment(loggedUser.getId(), project_id, comment);
 			
 			// New Fund
 			} else if (action.trim().equals("fund")) {
-
 				int funding_amount_id = Integer.parseInt(request.getParameter("funding_amount_id"));
 				
-				this.dbInterface.insertFund(loggedUser.getId(), funding_amount_id);
+				DatastoreInterface.getInstance().insertFund(loggedUser.getId(), funding_amount_id);
+				
+				project_id = DatastoreInterface.getInstance().getFundingAmountById(funding_amount_id).getProjectId();
 			}
+		
+			// Show project
+			if (project_id == -1)
+				return;
+			
+			prepareProjectDetails(request, project_id);
+			this.getServletContext().getRequestDispatcher("/project/project.jsp").forward(request, response);
+			return;
 		}
 	}
 	
@@ -84,31 +96,62 @@ public final class ProjectServlet extends HttpServlet {
 	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
 	 */
 	protected final void doGet(final HttpServletRequest request, final HttpServletResponse response) throws ServletException, IOException {
+		
+		final HttpSession session = request.getSession(true);
 
-		final String idString = request.getParameter("id");
-		if (idString == null) {
-			this.getServletContext().getRequestDispatcher("/Projects").forward(request, response);
+		final String action = request.getParameter("action");
+		final User loggedUser = UserManagement.getCurrentlyLoggedInUser(session);
+		
+		if (action != null && loggedUser != null) { 
+			
+			// Show empty form
+			if (action.trim().equals("new")) {
+				
+				final ComboHelper categories = new ComboHelper ("category_id", (List<ComboInterface>)(List<?>)CategoryAccess.getInstance().getAllCategories());
+				final ComboHelper cities = new ComboHelper ("city_id", (List<ComboInterface>)(List<?>)CityAccess.getInstance().getAllCities());
+
+				request.setAttribute("cities_combo" , cities);
+				request.setAttribute("categories_combo" , categories);
+				
+				this.getServletContext().getRequestDispatcher("/project/form.jsp").forward(request, response);
+				return;
+				
+			// Show filled form
+			} else if (action.trim().equals("edit")) {
+
+				final int project_id = Integer.parseInt(request.getParameter("id"));
+				Project project = dbInterface.getProjectById(project_id);
+
+				final ComboHelper categories = new ComboHelper ("category_id", (List<ComboInterface>)(List<?>)CategoryAccess.getInstance().getAllCategories());
+				final ComboHelper cities = new ComboHelper ("city_id", (List<ComboInterface>)(List<?>)CityAccess.getInstance().getAllCities());
+
+				request.setAttribute("cities_combo" , cities);
+				request.setAttribute("categories_combo", categories);
+				request.setAttribute("project", project);
+				
+				this.getServletContext().getRequestDispatcher("/project/form.jsp").forward(request, response);
+				return;
+			}
 		}
 
-		try {
-
-			final int project_id = Integer.parseInt(idString);
-			request.setAttribute("project_id", project_id);
-
-			// Create tables and store them in the request
-			request.setAttribute("projectTable", createProjectDetailTable(project_id));			
-			request.setAttribute("amountTable", createFundingAmountTable(project_id));
-			request.setAttribute("commentTable", createCommentsTable(project_id));
-			
-			final ComboHelper fundingAmountCombo = new ComboHelper ("funding_amount_id", (List<ComboInterface>)(List<?>)dbInterface.getFundingAmountsOfProject(project_id));
-			request.setAttribute("fundingAmountCombo", fundingAmountCombo);
-			
-		} catch (final Exception ex) {
-			ex.printStackTrace();
-			this.getServletContext().getRequestDispatcher("/Projects.jsp").forward(request, response);
-		}
-
-		this.getServletContext().getRequestDispatcher("/Project.jsp").forward(request, response);
+		// Show project details
+		final int project_id = Integer.parseInt(request.getParameter("id"));
+		prepareProjectDetails(request, project_id);
+		
+		this.getServletContext().getRequestDispatcher("/project/project.jsp").forward(request, response);
+	}
+	
+	
+	// Prepare request for showing project details
+	private void prepareProjectDetails(HttpServletRequest request, int project_id) {
+		request.setAttribute("project_id", project_id);
+		
+		request.setAttribute("projectTable", createProjectDetailTable(project_id));			
+		request.setAttribute("amountTable", createFundingAmountTable(project_id));
+		request.setAttribute("commentTable", createCommentsTable(project_id));
+		
+		final ComboHelper fundingAmountCombo = new ComboHelper ("funding_amount_id", (List<ComboInterface>)(List<?>)DatastoreInterface.getInstance().getFundingAmountsOfProject(project_id));
+		request.setAttribute("fundingAmountCombo", fundingAmountCombo);
 	}
 
 	
@@ -143,7 +186,7 @@ public final class ProjectServlet extends HttpServlet {
 	 * Construct a table to present all comments
 	 *******************************************************/
 	private String createCommentsTable (final int project_id) {
-		final List<Comment> comments = this.dbInterface.getCommentsByProjectId(project_id);
+		final List<Comment> comments = DatastoreInterface.getInstance().getCommentsByProjectId(project_id);
 		final BeanTableHelper<Comment> commentTable = new BeanTableHelper<Comment>(
 				"comment" 		/* The table html id property */,
 				"commentTable" /* The table html class property */,
@@ -164,7 +207,7 @@ public final class ProjectServlet extends HttpServlet {
 	 * Construct a table for all payment amounts
 	 *******************************************************/
 	private String createFundingAmountTable(final int project_id) {
-		List<FundingAmount> fundingAmounts = this.dbInterface.getFundingAmountsOfProject(project_id);
+		List<FundingAmount> fundingAmounts = DatastoreInterface.getInstance().getFundingAmountsOfProject(project_id);
 		
 		final BeanTableHelper<FundingAmount> fundingAmountsTable = new BeanTableHelper<FundingAmount>(
 				"fundingAmounts" 		/* The table html id property */,

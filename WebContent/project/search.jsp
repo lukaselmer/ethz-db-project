@@ -1,5 +1,6 @@
+<%@ page import="ch.ethz.inf.dbproject.ProjectsServlet"%>
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
-<%@ include file="Header.jsp" %>
+<%@ include file="../Header.jsp" %>
 
 <h1>Search</h1>
 
@@ -21,4 +22,4 @@
 ${results}
 <hr/>
 
-<%@ include file="Footer.jsp" %>
+<%@ include file="../Footer.jsp" %>

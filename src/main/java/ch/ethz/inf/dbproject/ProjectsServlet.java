@@ -1,16 +1,16 @@
 package ch.ethz.inf.dbproject;
 
 import java.io.IOException;
+import java.util.List;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
 
-import ch.ethz.inf.dbproject.model.DatastoreInterface;
 import ch.ethz.inf.dbproject.model.Project;
+import ch.ethz.inf.dbproject.model.access.ProjectAccess;
 import ch.ethz.inf.dbproject.util.html.BeanTableHelper;
 
 /**
@@ -20,7 +20,7 @@ import ch.ethz.inf.dbproject.util.html.BeanTableHelper;
 public final class ProjectsServlet extends HttpServlet {
 
 	private static final long serialVersionUID = 1L;
-	private final DatastoreInterface dbInterface = new DatastoreInterface();
+	private final ProjectAccess dbInterface = ProjectAccess.getInstance();
 
 	/**
 	 * @see HttpServlet#HttpServlet()
@@ -35,11 +35,46 @@ public final class ProjectsServlet extends HttpServlet {
 	protected final void doGet(final HttpServletRequest request, final HttpServletResponse response) 
 			throws ServletException, IOException {
 
-		final HttpSession session = request.getSession(true);
+		List<Project> projects = null;
 
-		/*******************************************************
-		 * Construct a table to present all our results
-		 *******************************************************/
+		// The filter parameter defines what to show on the Projects page
+		final String filter = request.getParameter("filter");
+		final String category = request.getParameter("category");
+
+		if (filter == null && category == null) {
+			// If no filter is specified, then we display all the projects!
+			projects = this.dbInterface.getAllProjects();
+
+		} else if (category != null) {
+			projects = this.dbInterface.getProjectsByCategory(Integer.parseInt(category));
+			
+		} else if (filter != null) {
+		
+			if(filter.equals("popular")) {
+				projects = this.dbInterface.getMostPopularProjects();
+
+			} else if (filter.equals("funded")) {
+				projects = this.dbInterface.getMostFundedProjects();
+
+			} else if (filter.equals("ending")) {
+				projects = this.dbInterface.getSoonEndingProjects();
+			}
+			
+		} else {
+			throw new RuntimeException("Code should not be reachable!");
+		}
+		
+		if (projects != null)
+			request.setAttribute("projects", getProjectsTable(projects));
+
+		// Finally, proceed to the Projects.jsp page which will render the Projects
+		this.getServletContext().getRequestDispatcher("/project/projects.jsp").forward(request, response);
+	}
+
+	/*******************************************************
+	 * Construct a table to present all our results
+	 *******************************************************/
+	public static String getProjectsTable(List<Project> projects) {
 		final BeanTableHelper<Project> table = new BeanTableHelper<Project>(
 				"projects" 		/* The table html id property */,
 				"projectsTable" /* The table html class property */,
@@ -50,48 +85,10 @@ public final class ProjectsServlet extends HttpServlet {
 		table.addBeanColumn("Project Title", "title");
 		table.addBeanColumn("Start", "start");
 		table.addBeanColumn("End", "end");
-		table.addLinkColumn(""	/* The header. We will leave it empty */,
-				"View Project" 	/* What should be displayed in every row */,
-				"Project?id=" 	/* This is the base url. The final url will be composed from the concatenation of this and the parameter below */, 
-				"id" 			/* For every project displayed, the ID will be retrieved and will be attached to the url base above */);
+		table.addLinkColumn("", "View Project", "Project?id=", "id");
 
-		// Pass the table to the session. This will allow the respective jsp page to display the table.
-		session.setAttribute("projects", table);
-
-		// The filter parameter defines what to show on the Projects page
-		final String filter = request.getParameter("filter");
-		final String category = request.getParameter("category");
-
-		if (filter == null && category == null) {
-
-			// If no filter is specified, then we display all the projects!
-			table.addObjects(this.dbInterface.getAllProjects());
-
-		} else if (category != null) {
-
-			table.addObjects(this.dbInterface.getProjectsByCategory(Integer.parseInt(category)));
-			
-		} else if (filter != null) {
+		table.addObjects(projects);
 		
-			if(filter.equals("popular")) {
-
-				table.addObjects(this.dbInterface.getMostPopularProjects());
-
-			} else if (filter.equals("funded")) {
-
-				table.addObjects(this.dbInterface.getMostFundedProjects());
-
-			} else if (filter.equals("ending")) {
-
-				table.addObjects(this.dbInterface.getSoonEndingProjects());
-
-			}
-			
-		} else {
-			throw new RuntimeException("Code should not be reachable!");
-		}
-
-		// Finally, proceed to the Projects.jsp page which will render the Projects
-		this.getServletContext().getRequestDispatcher("/Projects.jsp").forward(request, response);
+		return table.generateHtmlCode();
 	}
 }

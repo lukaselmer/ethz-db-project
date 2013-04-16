@@ -9,17 +9,20 @@ import java.sql.SQLException;
 public class FundingAmount implements ComboInterface {
 
 	private final int id;
+	private final int project_id;
 	private final double amount;
 	private final String reward;
 	
-	public FundingAmount(final int id, final double amount, final String reward) {
+	public FundingAmount(final int id, final int project_id, final double amount, final String reward) {
 		this.id = id;
+		this.project_id = project_id;
 		this.amount = amount;
 		this.reward = reward;
 	}
 	
 	public FundingAmount (final ResultSet rs) throws SQLException {
 		this.id = rs.getInt("id");
+		this.project_id = rs.getInt("project_id");
 		this.amount = rs.getDouble("amount");
 		this.reward = rs.getString("reward");
 	}
@@ -34,6 +37,10 @@ public class FundingAmount implements ComboInterface {
 
 	public int getId() {
 		return id;
+	}
+
+	public int getProjectId() {
+		return project_id;
 	}
 	
 	public String toString() {;

@@ -9,8 +9,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
-import ch.ethz.inf.dbproject.model.DatastoreInterface;
 import ch.ethz.inf.dbproject.model.Project;
+import ch.ethz.inf.dbproject.model.access.ProjectAccess;
 import ch.ethz.inf.dbproject.util.html.BeanTableHelper;
 
 /**
@@ -20,7 +20,7 @@ import ch.ethz.inf.dbproject.util.html.BeanTableHelper;
 public final class SearchServlet extends HttpServlet {
 	
 	private static final long serialVersionUID = 1L;
-	private final DatastoreInterface dbInterface = new DatastoreInterface();
+	private final ProjectAccess dbInterface = ProjectAccess.getInstance();
 		
     /**
      * @see HttpServlet#HttpServlet()
@@ -81,6 +81,6 @@ public final class SearchServlet extends HttpServlet {
 		}
 
 		// Finally, proceed to the Seaech.jsp page which will render the search results
-        this.getServletContext().getRequestDispatcher("/Search.jsp").forward(request, response);	        
+        this.getServletContext().getRequestDispatcher("/project/search.jsp").forward(request, response);	        
 	}
 }

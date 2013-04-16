@@ -4,6 +4,8 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Date;
 
+import ch.ethz.inf.dbproject.model.access.UserAccess;
+
 /**
  * Object that represents a user comment.
  */
@@ -54,6 +56,6 @@ public class Comment {
 	}	
 	
 	public String getUsername(){
-		return new DatastoreInterface().getUserById(user_id).getName();
+		return UserAccess.getInstance().getUserById(user_id).getName();
 	}
 }
