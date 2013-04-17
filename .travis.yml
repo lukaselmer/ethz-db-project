@@ -3,6 +3,7 @@ jdk:
   - openjdk6
   - openjdk7
 before_script:
+  - killall -9 -r java && sleep 3 && killall -9 -r VBox
   - mysql -u root -e "drop database if exists dmdb2013;"
   - mysql -u root -e "create user dmdb@localhost identified by '1234';"
   - mysql -u root -e "create database dmdb2013;"
