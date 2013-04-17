@@ -1,7 +1,12 @@
 package ch.ethz.inf.dbproject.model.access;
 
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
+
+import ch.ethz.inf.dbproject.model.Fund;
 
 /**
  * This class should be the interface between the web application and the
@@ -19,10 +24,13 @@ public final class FundAccess extends AbstractAccess {
 	}
 
 	private PreparedStatement pstmt_insertFund;
+	private PreparedStatement pstmt_getFundsOfUser;
 		
 	//dont get it why all prepared statements should be in the cTor.. but was a hint in this file..
 	public void initStatements() throws SQLException {
 		pstmt_insertFund = this.sqlConnection.getConnection().prepareStatement("insert into fund (user_id, funding_amount_id) values (?, ?)");
+
+		pstmt_getFundsOfUser = this.sqlConnection.getConnection().prepareStatement("select * from fund where user_id = ?");
 	}
 	
 	public final void insertFund (final int user_id, final int funding_amount_id) {
@@ -37,5 +45,25 @@ public final class FundAccess extends AbstractAccess {
 		} catch (final SQLException ex) {
 			ex.printStackTrace();
 		}
+	}
+	
+
+	public final List<Fund> getFundsOfUser (final int user_id) {
+
+		final List<Fund> funds = new ArrayList<Fund>();
+
+		try {
+
+			pstmt_getFundsOfUser.setInt(1, user_id);
+
+			final ResultSet rs = pstmt_getFundsOfUser.executeQuery();
+			while (rs.next()) {
+				funds.add(new Fund(rs));
+			}
+			rs.close();
+		} catch (final SQLException ex) {
+			ex.printStackTrace();
+		}
+		return funds;
 	}
 }

@@ -4,27 +4,24 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ include file="../Header.jsp" %>
 
-<h2>Your Account</h2>
-
 <% 
 final User user = UserManagement.getCurrentlyLoggedInUser(session);
 
 //User is logged in. Display the details:
 if (user != null) {
 %>
+	<h2>Your Account</h2>
+	${userDetails}
 	
-	<%= request.getAttribute("userDetails") %>
-		
-	<%
-	//TODO: Display funded projects
-	%>
+	<h2>Fundings</h2>
+	${fundings}
 	<a href="Project?action=new">New Project</a>
-	<%
-	
-
+		
+<%
 // User not logged in. Display the login form.
 } else {
 %>
+	<h2>Login</h2>
 	<form action="User" method="post">
 		<input type="hidden" name="action" value="login" />
 		<table>

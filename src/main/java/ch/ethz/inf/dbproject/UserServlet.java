@@ -9,7 +9,9 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import ch.ethz.inf.dbproject.model.Fund;
 import ch.ethz.inf.dbproject.model.User;
+import ch.ethz.inf.dbproject.model.access.FundAccess;
 import ch.ethz.inf.dbproject.model.access.UserAccess;
 import ch.ethz.inf.dbproject.util.UserManagement;
 import ch.ethz.inf.dbproject.util.html.BeanTableHelper;
@@ -114,7 +116,13 @@ public final class UserServlet extends HttpServlet {
 		final BeanTableHelper<User> userDetails = new BeanTableHelper<User>("userDetails", "userDetails", User.class);
 		userDetails.addBeanColumn("Name", "name");
 		userDetails.addObject(user);
+
+		final BeanTableHelper<Fund> fundings = new BeanTableHelper<Fund>("fundings", "fundings", Fund.class);
+		fundings.addBeanColumn("Funding", "fundingAmount");
+		fundings.addLinkColumn("", "View Project", "Project?id=", "projectId");
+		fundings.addObjects(FundAccess.getInstance().getFundsOfUser(user.getId()));
 		
 		request.setAttribute("userDetails", userDetails);
+		request.setAttribute("fundings", fundings);
 	}
 }
