@@ -53,6 +53,14 @@ public final class UserServlet extends HttpServlet {
 			} else if (action.trim().equals("edit")) {
 				user_id = Integer.parseInt(request.getParameter("id"));
 				dbInterface.updateUser(user_id, name, password);
+			
+			// Login
+			} else if (action.trim().equals("login")) {
+				
+				User user = dbInterface.findUser(name,  password);
+				if (user != null) {
+					user_id = user.getId();
+				}
 			}
 
 			User user = dbInterface.getUserById(user_id);
@@ -77,22 +85,9 @@ public final class UserServlet extends HttpServlet {
 		
 		final String action = request.getParameter("action");
 		if (action != null) { 
-			
-			// Login
-			if (action.trim().equals("login") && loggedUser == null) {
-				
-				// Note: It is really not safe to use HTML get method to send passwords.
-				// However for this project, security is not a requirement.
-				final String username = request.getParameter("username");
-				final String password = request.getParameter("password");
-	
-				loggedUser = dbInterface.findUser(username,  password);
-				if (loggedUser != null) {
-					UserManagement.setCurrentlyLoggedInUser(session, loggedUser);
-				}
-				
+							
 			// Logout
-			} else if (action.trim().equals("logout")) {
+			if (action.trim().equals("logout")) {
 				UserManagement.logoutUser(session);
 				loggedUser = null;
 			

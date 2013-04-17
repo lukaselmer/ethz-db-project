@@ -25,12 +25,12 @@ if (user != null) {
 // User not logged in. Display the login form.
 } else {
 %>
-	<form action="User" method="get">
+	<form action="User" method="post">
 		<input type="hidden" name="action" value="login" />
 		<table>
 			<tr>
 				<th>Username</th>
-				<td><input type="text" name="username" value="" /></td>
+				<td><input type="text" name="name" value="" /></td>
 			</tr>
 			<tr>
 				<th>Password</th>
