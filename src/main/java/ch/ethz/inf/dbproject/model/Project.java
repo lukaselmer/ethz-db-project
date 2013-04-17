@@ -1,5 +1,6 @@
 package ch.ethz.inf.dbproject.model;
 
+import java.math.BigDecimal;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Date;
@@ -13,10 +14,11 @@ public final class Project {
 	private final int user_id;
 	private final String title;
 	private final String description;
-	private final double goal;
+	private final BigDecimal goal;
 	private final Date start;
 	private final Date end;
-
+	private int count;
+	private BigDecimal sum;
 
 	/**
 	 * Construct a new project.
@@ -24,7 +26,7 @@ public final class Project {
 	 * @param name
 	 *            The name of the project
 	 */
-	public Project(final int id, final int user_id, final String title, final String description, final double goal, final Date start,
+	public Project(final int id, final int user_id, final String title, final String description, final BigDecimal goal, final Date start,
 			final Date end) {
 		this.id = id;
 		this.user_id = user_id;
@@ -40,7 +42,7 @@ public final class Project {
 		this.user_id = rs.getInt("user_id");
 		this.title = rs.getString("title");
 		this.description = rs.getString("description");
-		this.goal = rs.getDouble("goal");
+		this.goal = rs.getBigDecimal("goal");
 		this.start = rs.getDate("start");
 		this.end = rs.getDate("end");
 	}
@@ -65,7 +67,7 @@ public final class Project {
 		return end;
 	}
 
-	public double getGoal() {
+	public BigDecimal getGoal() {
 		return goal;
 	}
 
@@ -75,6 +77,22 @@ public final class Project {
 	
 	public String getOwner(){
 		return UserAccess.getInstance().getUserById(user_id).getName();
+	}
+
+	public int getCount() {
+		return count;
+	}
+
+	public void setCount(int count) {
+		this.count = count;
+	}
+
+	public BigDecimal getSum() {
+		return sum;
+	}
+
+	public void setSum(BigDecimal sum) {
+		this.sum = sum;
 	}
 
 }

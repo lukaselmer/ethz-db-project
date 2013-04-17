@@ -1,5 +1,6 @@
 package ch.ethz.inf.dbproject.model.access;
 
+import java.math.BigDecimal;
 import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -21,27 +22,75 @@ public class ProjectAccess extends AbstractAccess {
 		return instance;
 	}
 
-	private PreparedStatement pstmt_insertProject;
+	private final int limit = 2;
 	
+	private final String sql_soonEndingProjects = 
+			"SELECT * FROM project " +
+			"WHERE end > NOW() " +
+			"ORDER BY end ASC " +
+			"LIMIT " + limit;
+	
+	private final String sql_mostFundedProjects = 
+			"SELECT p.*, sum(a.amount) AS sum FROM fund f " +
+			"LEFT JOIN (funding_amount a) ON (f.funding_amount_id = a.id) " +
+			"LEFT JOIN (project p) ON (a.project_id = p.id) " +
+			"GROUP BY p.id " +
+			"ORDER BY sum DESC " +
+			"LIMIT " + limit;
+	
+	private final String sql_mostPopularProjects = 
+			"SELECT p.*, count(*) AS count FROM fund f " +
+			"LEFT JOIN (funding_amount a) ON (f.funding_amount_id = a.id) " +
+			"LEFT JOIN (project p) ON (a.project_id = p.id) " +
+			"GROUP BY p.id " +
+			"ORDER BY count DESC " +
+			"LIMIT " + limit;
+	
+	private final String sql_searchProjectByTitle = 
+			"SELECT * FROM project " +
+			"WHERE title like ?";
+	
+	private final String sql_searchProjectByCity =
+			"SELECT * FROM project " +
+			"LEFT JOIN(city) ON (project.city_id = city.id) " +
+			"WHERE city.name like ?";
+			
+	private final String sql_searchProjectByCategory = 
+			"SELECT * FROM project " +
+			"LEFT JOIN(category) ON (project.category_id = category.id) " +
+			"WHERE category.name like ?";
+
+	private final String sql_insertProject = 
+			"INSERT INTO project " +
+			"(user_id, city_id, category_id, title, description, goal, start, end) " +
+			"VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+	
+	private final String sql_getProjectById = 
+			"SELECT * FROM project " +
+			"WHERE id = ?";
+	
+	private final String sql_getProjectsByCategory =
+			"SELECT * FROM project " +
+			"WHERE category_id = ?";
+	
+
+	private PreparedStatement pstmt_insertProject;
 	private PreparedStatement pstmt_getProjectsByCategory;
 	private PreparedStatement pstmt_getProjectById;
-	
 	private PreparedStatement pstmt_searchProjectByTitle;
 	private PreparedStatement pstmt_searchProjectByCategory;
 	private PreparedStatement pstmt_searchProjectByCity;
-
+	
 	protected void initStatements() throws SQLException {
-		pstmt_insertProject = this.sqlConnection.getConnection().prepareStatement("insert into project (user_id, city_id, category_id, title, description, goal, start, end) values (?, ?, ?, ?, ?, ?, ?, ?)", Statement.RETURN_GENERATED_KEYS);
-		
-		pstmt_getProjectById = this.sqlConnection.getConnection().prepareStatement("select * from project where id = ?");
-		pstmt_getProjectsByCategory = this.sqlConnection.getConnection().prepareStatement("select * from project where category_id = ?");
-		
-		pstmt_searchProjectByTitle = this.sqlConnection.getConnection().prepareStatement("select * from project where title like ?");
-		pstmt_searchProjectByCategory = this.sqlConnection.getConnection().prepareStatement("select * from project left join(category) on (project.category_id = category.id) where category.name like ?");
-		pstmt_searchProjectByCity = this.sqlConnection.getConnection().prepareStatement("select * from project left join(city) on (project.city_id = city.id) where city.name like ?");
+		pstmt_insertProject = this.sqlConnection.getConnection().prepareStatement(sql_insertProject, Statement.RETURN_GENERATED_KEYS);
+		pstmt_getProjectById = this.sqlConnection.getConnection().prepareStatement(sql_getProjectById);
+		pstmt_getProjectsByCategory = this.sqlConnection.getConnection().prepareStatement(sql_getProjectsByCategory);
+		pstmt_searchProjectByTitle = this.sqlConnection.getConnection().prepareStatement(sql_searchProjectByTitle);
+		pstmt_searchProjectByCategory = this.sqlConnection.getConnection().prepareStatement(sql_searchProjectByCategory);
+		pstmt_searchProjectByCity = this.sqlConnection.getConnection().prepareStatement(sql_searchProjectByCity);
 	}
 	
-	public final int insertProject (final int user_id, final int city_id, final int category_id, final String title, final String description, final double goal, final Date start,
+	public final int insertProject (final int user_id, final int city_id, final int category_id, final String title, final String description, final BigDecimal goal, final Date start,
 			final Date end) {
 		
 		try {
@@ -50,7 +99,7 @@ public class ProjectAccess extends AbstractAccess {
 			pstmt_insertProject.setInt(3, category_id);
 			pstmt_insertProject.setString(4, title);
 			pstmt_insertProject.setString(5, description);
-			pstmt_insertProject.setDouble(6, goal);
+			pstmt_insertProject.setBigDecimal(6, goal);
 			pstmt_insertProject.setObject(7, new Timestamp(start.getTime()));
 			pstmt_insertProject.setObject(8, new Timestamp(end.getTime()));
 			
@@ -108,7 +157,7 @@ public class ProjectAccess extends AbstractAccess {
 		final List<Project> projects = new ArrayList<Project>();
 		try {
 			final Statement stmt = this.sqlConnection.getConnection().createStatement();
-			final ResultSet rs = stmt.executeQuery("select * from project where end > NOW() order by end asc limit 2");
+			final ResultSet rs = stmt.executeQuery(sql_soonEndingProjects);
 
 			while (rs.next()) {
 				projects.add(new Project(rs));
@@ -128,10 +177,12 @@ public class ProjectAccess extends AbstractAccess {
 		final List<Project> projects = new ArrayList<Project>();
 		try {
 			final Statement stmt = this.sqlConnection.getConnection().createStatement();
-			final ResultSet rs = stmt.executeQuery("select project_id from fund left join (funding_amount) on (fund.funding_amount_id = funding_amount.id) group by project_id order by sum(amount) desc limit 2");
+			final ResultSet rs = stmt.executeQuery(sql_mostFundedProjects);
 
 			while (rs.next()) {
-				projects.add(getProjectById(rs.getInt("project_id")));
+				Project p = new Project(rs);
+				p.setSum(rs.getBigDecimal("sum"));
+				projects.add(p);
 			}
 
 			rs.close();
@@ -148,10 +199,12 @@ public class ProjectAccess extends AbstractAccess {
 		final List<Project> projects = new ArrayList<Project>();
 		try {
 			final Statement stmt = this.sqlConnection.getConnection().createStatement();
-			final ResultSet rs = stmt.executeQuery("select project_id from fund left join (funding_amount) ON (fund.funding_amount_id = funding_amount.id) group by project_id order by count(*) desc limit 2");
+			final ResultSet rs = stmt.executeQuery(sql_mostPopularProjects);
 
 			while (rs.next()) {
-				projects.add(getProjectById(rs.getInt("project_id")));
+				Project p = new Project(rs);
+				p.setCount(rs.getInt("count"));
+				projects.add(p);
 			}
 
 			rs.close();

@@ -35,6 +35,18 @@ public final class ProjectsServlet extends HttpServlet {
 	protected final void doGet(final HttpServletRequest request, final HttpServletResponse response) 
 			throws ServletException, IOException {
 
+		final BeanTableHelper<Project> table = new BeanTableHelper<Project>(
+				"projects" 		/* The table html id property */,
+				"projectsTable" /* The table html class property */,
+				Project.class 	/* The class of the objects (rows) that will bedisplayed */
+		);
+
+		// Add columns to the new table
+		table.addBeanColumn("Project Title", "title");
+		table.addBeanColumn("Start", "start");
+		table.addBeanColumn("End", "end");
+		table.addLinkColumn("", "View Project", "Project?id=", "id");
+		
 		List<Project> projects = null;
 
 		// The filter parameter defines what to show on the Projects page
@@ -51,9 +63,11 @@ public final class ProjectsServlet extends HttpServlet {
 		} else if (filter != null) {
 		
 			if(filter.equals("popular")) {
+				table.addBeanColumn("Number fundings", "count");
 				projects = this.dbInterface.getMostPopularProjects();
 
 			} else if (filter.equals("funded")) {
+				table.addBeanColumn("Funding sum", "sum");
 				projects = this.dbInterface.getMostFundedProjects();
 
 			} else if (filter.equals("ending")) {
@@ -64,31 +78,12 @@ public final class ProjectsServlet extends HttpServlet {
 			throw new RuntimeException("Code should not be reachable!");
 		}
 		
-		if (projects != null)
-			request.setAttribute("projects", getProjectsTable(projects));
+		if (projects != null) {
+			table.addObjects(projects);
+			request.setAttribute("projects", table.generateHtmlCode());
+		}
 
 		// Finally, proceed to the Projects.jsp page which will render the Projects
 		this.getServletContext().getRequestDispatcher("/project/projects.jsp").forward(request, response);
-	}
-
-	/*******************************************************
-	 * Construct a table to present all our results
-	 *******************************************************/
-	public static String getProjectsTable(List<Project> projects) {
-		final BeanTableHelper<Project> table = new BeanTableHelper<Project>(
-				"projects" 		/* The table html id property */,
-				"projectsTable" /* The table html class property */,
-				Project.class 	/* The class of the objects (rows) that will bedisplayed */
-		);
-
-		// Add columns to the new table
-		table.addBeanColumn("Project Title", "title");
-		table.addBeanColumn("Start", "start");
-		table.addBeanColumn("End", "end");
-		table.addLinkColumn("", "View Project", "Project?id=", "id");
-
-		table.addObjects(projects);
-		
-		return table.generateHtmlCode();
 	}
 }

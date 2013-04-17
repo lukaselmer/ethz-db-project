@@ -1,6 +1,7 @@
 package ch.ethz.inf.dbproject;
 
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.sql.Date;
 import java.util.List;
 
@@ -15,11 +16,15 @@ import ch.ethz.inf.dbproject.model.ComboInterface;
 import ch.ethz.inf.dbproject.model.FundingAmount;
 import ch.ethz.inf.dbproject.model.Comment;
 import ch.ethz.inf.dbproject.model.Project;
+import ch.ethz.inf.dbproject.model.StretchGoal;
 import ch.ethz.inf.dbproject.model.User;
 import ch.ethz.inf.dbproject.model.access.CategoryAccess;
 import ch.ethz.inf.dbproject.model.access.CityAccess;
-import ch.ethz.inf.dbproject.model.access.DatastoreInterface;
+import ch.ethz.inf.dbproject.model.access.CommentAccess;
+import ch.ethz.inf.dbproject.model.access.FundAccess;
+import ch.ethz.inf.dbproject.model.access.FundingAmountAccess;
 import ch.ethz.inf.dbproject.model.access.ProjectAccess;
+import ch.ethz.inf.dbproject.model.access.StretchGoalAccess;
 import ch.ethz.inf.dbproject.util.UserManagement;
 import ch.ethz.inf.dbproject.util.html.BeanTableHelper;
 import ch.ethz.inf.dbproject.util.html.ComboHelper;
@@ -60,7 +65,7 @@ public final class ProjectServlet extends HttpServlet {
 				int category_id = Integer.parseInt(request.getParameter("category_id"));
 				String title = request.getParameter("title");
 				String description = request.getParameter("description");
-				double goal = Double.parseDouble(request.getParameter("goal"));
+				BigDecimal goal = new BigDecimal(request.getParameter("goal"));
 				Date start = Date.valueOf(request.getParameter("start"));
 				Date end = Date.valueOf(request.getParameter("end"));
 				
@@ -71,15 +76,31 @@ public final class ProjectServlet extends HttpServlet {
 				String comment = request.getParameter("comment");
 				project_id = Integer.parseInt(request.getParameter("project_id"));
 				
-				DatastoreInterface.getInstance().insertComment(loggedUser.getId(), project_id, comment);
+				CommentAccess.getInstance().insertComment(loggedUser.getId(), project_id, comment);
 			
 			// New Fund
 			} else if (action.trim().equals("fund")) {
 				int funding_amount_id = Integer.parseInt(request.getParameter("funding_amount_id"));
 				
-				DatastoreInterface.getInstance().insertFund(loggedUser.getId(), funding_amount_id);
+				FundAccess.getInstance().insertFund(loggedUser.getId(), funding_amount_id);
 				
-				project_id = DatastoreInterface.getInstance().getFundingAmountById(funding_amount_id).getProjectId();
+				project_id = FundingAmountAccess.getInstance().getFundingAmountById(funding_amount_id).getProjectId();
+				
+			// New Funding Amount
+			} else if (action.trim().equals("new_funding_amount")) {
+				String reward = request.getParameter("reward");
+				BigDecimal amount = new BigDecimal(request.getParameter("amount"));
+				project_id = Integer.parseInt(request.getParameter("project_id"));
+				
+				FundingAmountAccess.getInstance().insertFundingAmount(project_id, amount, reward);
+			
+			// New Stretch Goal
+			} else if (action.trim().equals("new_stretch_goal")) {
+				String bonus = request.getParameter("bonus");
+				BigDecimal amount = new BigDecimal(request.getParameter("amount"));
+				project_id = Integer.parseInt(request.getParameter("project_id"));
+				
+				StretchGoalAccess.getInstance().insertStretchGoal(project_id, amount, bonus);
 			}
 		
 			// Show project
@@ -145,12 +166,14 @@ public final class ProjectServlet extends HttpServlet {
 	// Prepare request for showing project details
 	private void prepareProjectDetails(HttpServletRequest request, int project_id) {
 		request.setAttribute("project_id", project_id);
+		request.setAttribute("project", dbInterface.getProjectById(project_id));
 		
 		request.setAttribute("projectTable", createProjectDetailTable(project_id));			
+		request.setAttribute("goalsTable", createStretchGoalTable(project_id));			
 		request.setAttribute("amountTable", createFundingAmountTable(project_id));
 		request.setAttribute("commentTable", createCommentsTable(project_id));
 		
-		final ComboHelper fundingAmountCombo = new ComboHelper ("funding_amount_id", (List<ComboInterface>)(List<?>)DatastoreInterface.getInstance().getFundingAmountsOfProject(project_id));
+		final ComboHelper fundingAmountCombo = new ComboHelper ("funding_amount_id", (List<ComboInterface>)(List<?>)FundingAmountAccess.getInstance().getFundingAmountsOfProject(project_id));
 		request.setAttribute("fundingAmountCombo", fundingAmountCombo);
 	}
 
@@ -186,7 +209,7 @@ public final class ProjectServlet extends HttpServlet {
 	 * Construct a table to present all comments
 	 *******************************************************/
 	private String createCommentsTable (final int project_id) {
-		final List<Comment> comments = DatastoreInterface.getInstance().getCommentsByProjectId(project_id);
+		final List<Comment> comments = CommentAccess.getInstance().getCommentsOfProject(project_id);
 		final BeanTableHelper<Comment> commentTable = new BeanTableHelper<Comment>(
 				"comment" 		/* The table html id property */,
 				"commentTable" /* The table html class property */,
@@ -207,7 +230,7 @@ public final class ProjectServlet extends HttpServlet {
 	 * Construct a table for all payment amounts
 	 *******************************************************/
 	private String createFundingAmountTable(final int project_id) {
-		List<FundingAmount> fundingAmounts = DatastoreInterface.getInstance().getFundingAmountsOfProject(project_id);
+		List<FundingAmount> fundingAmounts = FundingAmountAccess.getInstance().getFundingAmountsOfProject(project_id);
 		
 		final BeanTableHelper<FundingAmount> fundingAmountsTable = new BeanTableHelper<FundingAmount>(
 				"fundingAmounts" 		/* The table html id property */,
@@ -218,10 +241,30 @@ public final class ProjectServlet extends HttpServlet {
 		// Add columns to the new table
 		fundingAmountsTable.addBeanColumn("Reward", "reward");
 		fundingAmountsTable.addBeanColumn("Amount", "amount");
-		//fundingAmountsTable.addLinkColumn("", "Fund", "Project?action=fund&funding_amount_id=", "id");
-
+		
 		fundingAmountsTable.addObjects(fundingAmounts);
 		
 		return fundingAmountsTable.generateHtmlCode();
+	}
+	
+	/*******************************************************
+	 * Construct a table for all payment amounts
+	 *******************************************************/
+	private String createStretchGoalTable (final int project_id) {
+		List<StretchGoal> stretchGoals = StretchGoalAccess.getInstance().getStretchGoalsOfProject(project_id);
+		
+		final BeanTableHelper<StretchGoal> stretchGoalsTable = new BeanTableHelper<StretchGoal>(
+				"stretchGoals" 		/* The table html id property */,
+				"stretchGoalsTable" /* The table html class property */,
+				StretchGoal.class 	/* The class of the objects (rows) that will be displayed */
+		);
+
+		// Add columns to the new table
+		stretchGoalsTable.addBeanColumn("Bonus", "bonus");
+		stretchGoalsTable.addBeanColumn("Amount", "amount");
+		
+		stretchGoalsTable.addObjects(stretchGoals);
+		
+		return stretchGoalsTable.generateHtmlCode();
 	}
 }

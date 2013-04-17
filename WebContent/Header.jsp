@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <%@page import="ch.ethz.inf.dbproject.model.access.CategoryAccess"%>
-<%@page import="ch.ethz.inf.dbproject.model.access.DatastoreInterface"%>
+<%@page import="ch.ethz.inf.dbproject.model.access.FundAccess"%>
 <%@page import="java.util.List"%>
 <%@page import="ch.ethz.inf.dbproject.model.Category"%>
 <html>

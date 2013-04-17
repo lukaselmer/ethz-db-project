@@ -43,7 +43,7 @@
 		</tr>
 		<tr>
 			<th>Goal</th>
-			<td><input type="number" name="goal" value="<%= edit ? project.getGoal() : "" %>" /></td>
+			<td><input type="number" step="0.5" name="goal" value="<%= edit ? project.getGoal() : "" %>" /></td>
 		</tr>
 		<tr>
 			<th>Start</th>

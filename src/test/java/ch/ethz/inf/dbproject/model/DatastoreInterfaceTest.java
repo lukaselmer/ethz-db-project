@@ -1,11 +1,6 @@
 package ch.ethz.inf.dbproject.model;
 
-import static org.junit.Assert.*;
-
 import org.junit.Test;
-
-import ch.ethz.inf.dbproject.model.Project;
-import ch.ethz.inf.dbproject.model.access.DatastoreInterface;
 
 public class DatastoreInterfaceTest {
 
