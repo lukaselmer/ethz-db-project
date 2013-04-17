@@ -37,7 +37,7 @@ public final class CategoryServlet extends HttpServlet {
 		User loggedUser = UserManagement.getCurrentlyLoggedInUser(session);
 		
 		final String action = request.getParameter("action");
-		if (action != null && loggedUser == null) { 
+		if (action != null && loggedUser != null) { 
 
 			final String name = request.getParameter("name");
 			

@@ -20,7 +20,7 @@ public final class ComboHelper extends HtmlHelperIface {
 		final StringBuilder sb = new StringBuilder();
 		
 		sb.append("<!-- ComboHelper Generated Code -->\n");
-		sb.append("<select class=\"select\" name=\""+ name + "\">\n");
+		sb.append("<select name=\""+ name + "\">\n");
 		for (ComboInterface item : items) {
 			sb.append("\t<option value=\""+ item.getId() +"\">"+ item.toString() +"</option>\n");
 		}

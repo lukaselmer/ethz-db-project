@@ -5,6 +5,8 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Date;
 
+import ch.ethz.inf.dbproject.model.access.CategoryAccess;
+import ch.ethz.inf.dbproject.model.access.CityAccess;
 import ch.ethz.inf.dbproject.model.access.UserAccess;
 
 public final class Project {
@@ -12,6 +14,8 @@ public final class Project {
 	// TODO memeber for foreignkeys (category, city, user)
 	private final int id;
 	private final int user_id;
+	private final int category_id;
+	private final int city_id;
 	private final String title;
 	private final String description;
 	private final BigDecimal goal;
@@ -26,10 +30,12 @@ public final class Project {
 	 * @param name
 	 *            The name of the project
 	 */
-	public Project(final int id, final int user_id, final String title, final String description, final BigDecimal goal, final Date start,
+	public Project(final int id, final int user_id, final int category_id, final int city_id, final String title, final String description, final BigDecimal goal, final Date start,
 			final Date end) {
 		this.id = id;
 		this.user_id = user_id;
+		this.category_id = category_id;
+		this.city_id = city_id;
 		this.title = title;
 		this.description = description;
 		this.goal = goal;
@@ -40,6 +46,8 @@ public final class Project {
 	public Project(final ResultSet rs) throws SQLException {
 		this.id = rs.getInt("id");
 		this.user_id = rs.getInt("user_id");
+		this.category_id = rs.getInt("category_id");
+		this.city_id = rs.getInt("city_id");
 		this.title = rs.getString("title");
 		this.description = rs.getString("description");
 		this.goal = rs.getBigDecimal("goal");
@@ -93,6 +101,14 @@ public final class Project {
 
 	public void setSum(BigDecimal sum) {
 		this.sum = sum;
+	}
+	
+	public String getCategory() {
+		return CategoryAccess.getInstance().getCategoryById(category_id).getName();
+	}
+	
+	public String getCity() {
+		return CityAccess.getInstance().getCityById(city_id).getName();
 	}
 
 }

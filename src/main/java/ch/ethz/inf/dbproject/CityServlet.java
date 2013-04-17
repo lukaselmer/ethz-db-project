@@ -67,7 +67,7 @@ public final class CityServlet extends HttpServlet {
 		User loggedUser = UserManagement.getCurrentlyLoggedInUser(session);
 		
 		final String action = request.getParameter("action");
-		if (action != null && loggedUser == null) { 
+		if (action != null && loggedUser != null) { 
 			
 			// SHow empty form
 			if (action.trim().equals("new")) {

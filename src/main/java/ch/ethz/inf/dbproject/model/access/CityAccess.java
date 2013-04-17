@@ -23,25 +23,31 @@ public class CityAccess extends AbstractAccess {
 	private PreparedStatement pstmt_insertCity;
 	private PreparedStatement pstmt_updateCity;
 	private PreparedStatement pstmt_getCityById;
+	private PreparedStatement pstmt_getCityByName;
 	
 	protected void initStatements() throws SQLException {
-		pstmt_insertCity = this.sqlConnection.getConnection().prepareStatement("insert into city (name) values (?)");
+		pstmt_insertCity = this.sqlConnection.getConnection().prepareStatement("insert into city (name) values (?)", Statement.RETURN_GENERATED_KEYS);
 		pstmt_deleteCity = this.sqlConnection.getConnection().prepareStatement("delete from city where id = ?");
 		pstmt_updateCity = this.sqlConnection.getConnection().prepareStatement("update city set name = ? where id = ?");
 		pstmt_getCityById = this.sqlConnection.getConnection().prepareStatement("select * from city where id = ?");
+		pstmt_getCityByName = this.sqlConnection.getConnection().prepareStatement("select * from city where name = ?");
 	}
 
-	public final void insertCity (final String name) {
+	public final int insertCity (final String name) {
 		
 		try {
 			pstmt_insertCity.setString(1, name);
 			
 			pstmt_insertCity.execute();
+
+		    ResultSet rs = pstmt_insertCity.getGeneratedKeys();
+			rs.next();
 			
-			// TODO: error-handling
+			return rs.getInt(1);
 		} catch (final SQLException ex) {
 			ex.printStackTrace();
 		}
+		return -1;
 	}
 	
 	public final void updateCity (final int id, final String name) {
@@ -64,6 +70,21 @@ public class CityAccess extends AbstractAccess {
 		try {
 			pstmt_getCityById.setInt(1, id);
 			ResultSet rs = pstmt_getCityById.executeQuery();
+			if (rs.next())
+				c = new City(rs);
+			rs.close();
+		} catch (final SQLException ex) {
+			ex.printStackTrace();
+		}
+		return c;
+	}
+	
+	public final City getCityByName(final String name) {
+		City c = null;
+
+		try {
+			pstmt_getCityByName.setString(1, name);
+			ResultSet rs = pstmt_getCityByName.executeQuery();
 			if (rs.next())
 				c = new City(rs);
 			rs.close();
@@ -99,5 +120,13 @@ public class CityAccess extends AbstractAccess {
 		}
 
 		return cities;
+	}
+	
+	public final List<String> getAllCityNames() {
+		List<String> names = new ArrayList<String>();
+		for (City c : getAllCities()) {
+			names.add(c.getName());
+		}
+		return names;
 	}
 }

@@ -23,25 +23,32 @@ public class CategoryAccess extends AbstractAccess {
 	private PreparedStatement pstmt_insertCategory;
 	private PreparedStatement pstmt_updateCategory;
 	private PreparedStatement pstmt_getCategoryById;
+	private PreparedStatement pstmt_getCategoryByName;
 	
 	protected void initStatements() throws SQLException {
-		pstmt_insertCategory = this.sqlConnection.getConnection().prepareStatement("insert into category (name) values (?)");
+		pstmt_insertCategory = this.sqlConnection.getConnection().prepareStatement("insert into category (name) values (?)", Statement.RETURN_GENERATED_KEYS);
 		pstmt_deleteCategory = this.sqlConnection.getConnection().prepareStatement("delete from category where id = ?");
 		pstmt_updateCategory = this.sqlConnection.getConnection().prepareStatement("update category set name = ? where id = ?");
 		pstmt_getCategoryById = this.sqlConnection.getConnection().prepareStatement("select * from category where id = ?");
+		pstmt_getCategoryByName = this.sqlConnection.getConnection().prepareStatement("select * from category where name = ?");
 	}
 
-	public final void insertCategory (final String name) {
+	public final int insertCategory (final String name) {
 		
 		try {
 			pstmt_insertCategory.setString(1, name);
 			
 			pstmt_insertCategory.execute();
+
+
+		    ResultSet rs = pstmt_insertCategory.getGeneratedKeys();
+			rs.next();
 			
-			// TODO: error-handling
+			return rs.getInt(1);
 		} catch (final SQLException ex) {
 			ex.printStackTrace();
 		}
+		return -1;
 	}
 	
 	public final void updateCategory (final int id, final String name) {
@@ -64,6 +71,21 @@ public class CategoryAccess extends AbstractAccess {
 		try {
 			pstmt_getCategoryById.setInt(1, id);
 			ResultSet rs = pstmt_getCategoryById.executeQuery();
+			if (rs.next())
+				c = new Category(rs);
+			rs.close();
+		} catch (final SQLException ex) {
+			ex.printStackTrace();
+		}
+		return c;
+	}
+	
+	public final Category getCategoryByName(final String name) {
+		Category c = null;
+
+		try {
+			pstmt_getCategoryByName.setString(1, name);
+			ResultSet rs = pstmt_getCategoryByName.executeQuery();
 			if (rs.next())
 				c = new Category(rs);
 			rs.close();
@@ -99,5 +121,13 @@ public class CategoryAccess extends AbstractAccess {
 		}
 
 		return categories;
+	}
+
+	public final List<String> getAllCategoryNames() {
+		List<String> names = new ArrayList<String>();
+		for (Category c : getAllCategories()) {
+			names.add(c.getName());
+		}
+		return names;
 	}
 }

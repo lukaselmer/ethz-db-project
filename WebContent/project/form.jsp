@@ -27,19 +27,19 @@
 	<table>
 		<tr>
 			<th>Title</th>
-			<td><textarea rows="4" cols="50" name="title"><%= edit ? project.getTitle() : "" %></textarea></td>
+			<td><input type="text" name="title" value="<%= edit ? project.getTitle() : "" %>" /></td>
 		</tr>
 		<tr>
 			<th>Description</th>
-			<td><input type="text" name="description" value="<%= edit ? project.getDescription() : "" %>" /></td>
+			<td><textarea rows="4" cols="50" name="description"><%= edit ? project.getDescription() : "" %></textarea></td>
 		</tr>
 		<tr>
 			<th>Category</th>
-			<td>${categories_combo}</td>
+			<td><input type="text" name="category" autocomplete="off" data-provide="typeahead" data-source='${categories}' value="<%= edit ? project.getCategory() : "" %>"></td>
 		</tr>
 		<tr>
 			<th>City</th>
-			<td>${cities_combo}</td>
+			<td><input type="text" name="city" autocomplete="off" data-provide="typeahead" data-source='${cities}' value="<%= edit ? project.getCity() : "" %>"></td>
 		</tr>
 		<tr>
 			<th>Goal</th>

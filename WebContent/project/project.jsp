@@ -33,7 +33,7 @@ ${goalsTable}
 			</tr>
 			<tr>
 				<th colspan="2">
-					<input type="submit" value="Add Stretch Goal" />
+					<input type="submit" style="vertical-align:top" class="btn" value="Add Stretch Goal" />
 				</th>
 			</tr>
 		</table>
@@ -59,7 +59,7 @@ ${amountTable}
 			</tr>
 			<tr>
 				<th colspan="2">
-					<input type="submit" value="Add Funding Amount" />
+					<input type="submit" style="vertical-align:top" class="btn" value="Add Funding Amount" />
 				</th>
 			</tr>
 		</table>
@@ -71,9 +71,9 @@ ${amountTable}
 		// User is logged in. He can add a fund
 %>
 	<form action="Project" method="post">
-		<input type="hidden" name="action" value="fund" /> 
-		${fundingAmountCombo}
-		<input type="submit" value="Fund" />
+			<input type="hidden" name="action" value="fund" />
+			${fundingAmountCombo}
+			<input type="submit" style="vertical-align:top" class="btn" value="Fund" />
 	</form>
 <%
 	}
@@ -92,7 +92,7 @@ ${commentTable}
 		<input type="hidden" name="project_id" value="${project_id}" /> 
 		<b>Add Comment</b> <br />
 		<textarea rows="4" cols="50" name="comment"></textarea><br /> 
-		<input type="submit" value="Add Comment" />
+		<input type="submit" style="vertical-align:top" class="btn" value="Add Comment" />
 	</form>
 <%
 	}

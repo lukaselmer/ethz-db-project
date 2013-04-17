@@ -12,6 +12,10 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import org.json.simple.JSONArray;
+
+import ch.ethz.inf.dbproject.model.Category;
+import ch.ethz.inf.dbproject.model.City;
 import ch.ethz.inf.dbproject.model.ComboInterface;
 import ch.ethz.inf.dbproject.model.FundingAmount;
 import ch.ethz.inf.dbproject.model.Comment;
@@ -61,8 +65,12 @@ public final class ProjectServlet extends HttpServlet {
 			
 			// New Project
 			if (action.trim().equals("new")) {
-				int city_id = Integer.parseInt(request.getParameter("city_id"));
-				int category_id = Integer.parseInt(request.getParameter("category_id"));
+				Category category = CategoryAccess.getInstance().getCategoryByName(request.getParameter("category"));
+				City city = CityAccess.getInstance().getCityByName(request.getParameter("city"));
+				
+				int city_id     = (city == null) ? CityAccess.getInstance().insertCity(request.getParameter("city")) : city.getId(); 
+				int category_id = (category == null) ? CategoryAccess.getInstance().insertCategory(request.getParameter("category")) : category.getId(); 
+				
 				String title = request.getParameter("title");
 				String description = request.getParameter("description");
 				BigDecimal goal = new BigDecimal(request.getParameter("goal"));
@@ -127,12 +135,9 @@ public final class ProjectServlet extends HttpServlet {
 			
 			// Show empty form
 			if (action.trim().equals("new")) {
-				
-				final ComboHelper categories = new ComboHelper ("category_id", (List<ComboInterface>)(List<?>)CategoryAccess.getInstance().getAllCategories());
-				final ComboHelper cities = new ComboHelper ("city_id", (List<ComboInterface>)(List<?>)CityAccess.getInstance().getAllCities());
 
-				request.setAttribute("cities_combo" , cities);
-				request.setAttribute("categories_combo" , categories);
+				request.setAttribute("categories", JSONArray.toJSONString(CategoryAccess.getInstance().getAllCategoryNames()));
+				request.setAttribute("cities", JSONArray.toJSONString(CityAccess.getInstance().getAllCityNames()));
 				
 				this.getServletContext().getRequestDispatcher("/project/form.jsp").forward(request, response);
 				return;
@@ -143,11 +148,8 @@ public final class ProjectServlet extends HttpServlet {
 				final int project_id = Integer.parseInt(request.getParameter("id"));
 				Project project = dbInterface.getProjectById(project_id);
 
-				final ComboHelper categories = new ComboHelper ("category_id", (List<ComboInterface>)(List<?>)CategoryAccess.getInstance().getAllCategories());
-				final ComboHelper cities = new ComboHelper ("city_id", (List<ComboInterface>)(List<?>)CityAccess.getInstance().getAllCities());
-
-				request.setAttribute("cities_combo" , cities);
-				request.setAttribute("categories_combo", categories);
+				request.setAttribute("categories", JSONArray.toJSONString(CategoryAccess.getInstance().getAllCategoryNames()));
+				request.setAttribute("cities", JSONArray.toJSONString(CityAccess.getInstance().getAllCityNames()));
 				request.setAttribute("project", project);
 				
 				this.getServletContext().getRequestDispatcher("/project/form.jsp").forward(request, response);
