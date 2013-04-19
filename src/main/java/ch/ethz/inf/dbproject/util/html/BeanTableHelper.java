@@ -60,6 +60,8 @@ public final class BeanTableHelper<T> extends HtmlHelperIface {
 				e.printStackTrace();
 			} catch (InvocationTargetException e) {
 				e.printStackTrace();
+			} catch (NullPointerException e) {
+				e.printStackTrace();
 			}
 
 			return value;
